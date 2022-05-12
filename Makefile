@@ -10,7 +10,7 @@ CC=clang++
 TARGET=$(BIN)/crawler
 RM=rm -rf
 
-$(shell mkdir -p obj bin tests/obj)
+$(shell mkdir -p obj bin)
 SRCS=$(wildcard $(SRC)/*.cpp)
 
 OBJS=$(patsubst $(SRC)/%.cpp, $(OBJ)/%.o, $(SRCS))

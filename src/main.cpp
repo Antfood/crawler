@@ -1,11 +1,9 @@
-#include <iostream>
-
-
+#include "../include/crawler.hpp"
 
 int main()
 {
-
-  std::cout << "hello world\n";
+  Crawler crawler;
+  crawler.read_directory_tree();
 
   return 0;
 }
