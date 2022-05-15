@@ -16,8 +16,8 @@ const std::string Changeset::error_to_string(const int pos)
 
     case bad_field_count:
       return std::string("Bad Field count");
-
     case bad_client:
+
       return std::string("Bad Client Name");
 
     case bad_project:
