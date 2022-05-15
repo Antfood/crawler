@@ -1,6 +1,6 @@
 #include "../include/validator.hpp"
 
-Changeset::Changeset(std::vector<const std::string> &&fields) :
+Changeset::Changeset(std::vector<std::string> &&fields) :
   m_fields(fields),
   m_valid(true)
 { };
@@ -67,7 +67,7 @@ Validator::Validator(const std::string &delimiter) :
 struct Validator::Private 
 {
   public:
-    static void split_extension(Validator &self, const std::string &filename, std::vector<const std::string> &output)
+    static void split_extension(Validator &self, const std::string &filename, std::vector<std::string> &output)
     {
       size_t dot_pos = filename.find(DOT, self.m_cursor);
       output.push_back(filename.substr(self.m_cursor, dot_pos - self.m_cursor));
@@ -114,7 +114,7 @@ struct Validator::Private
 
 Changeset Validator::split(const std::string &filename)
 {
-  std::vector<const std::string> output;
+  std::vector<std::string> output;
 
   while(1)
   {
@@ -409,6 +409,18 @@ TEST_CASE("Validator")
     CHECK(changeset.m_valid == false);
     CHECK(changeset.m_errors.at(0).first == bad_extension);
     CHECK(changeset.m_errors.at(0).second == 61); 
+  }
+
+  SUBCASE("validate multiple bad fields")
+  {
+    auto changeset = validator.split("client_project_na./me_original_1020012_G_1290_4-4_PB_DigonesBass.mp3");
+    validator.validate_delimiter(changeset);
+    validator.validate_fields_count(changeset);
+    validator.validate_fields(changeset);
+
+    CHECK(changeset.m_errors.at(0).first == bad_name);
+    CHECK(changeset.m_errors.at(1).first == bad_date);
+    CHECK(changeset.m_errors.at(2).first == bad_bpm);
   }
 
 };
