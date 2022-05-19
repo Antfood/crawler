@@ -47,13 +47,15 @@ using ValidationError = std::pair<const error_type, const size_t>;
 struct Changeset
 {
   public:
-    std::vector<std::string> m_fields;
+    std::vector<std::string>       m_fields;
     std::vector<ValidationError>   m_errors;
     bool                           m_valid;
 
     Changeset(std::vector<std::string> &&fields);
 
     const std::string             error_to_string(const int pos);
+    const std::string             other_errors();
+    const std::string             first_error();
     void                          invalidate(const error_type err, int pos);
 
 };

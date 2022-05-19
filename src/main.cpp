@@ -1,8 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "../include/crawler.hpp"
 #include "../include/validator.hpp"
-#include <ftxui/dom/elements.hpp>
-#include <ftxui/screen/screen.hpp>
+#include "../include/input_component.hpp"
 
 int test()
 {
@@ -21,25 +20,9 @@ int test()
 int main()
 {
 
-  int res = test();
- 
-  ftxui::Element doc = ftxui::hbox
- ({
-    ftxui::text("left") | ftxui::border,
-    ftxui::text("middle") | ftxui::border | ftxui::flex,
-    ftxui::text("right")  | ftxui::border 
+  Crawler crawler;
+  crawler.read_directory_tree();
 
-  });
-
-  auto screen = ftxui::Screen::Create
- (
-    ftxui::Dimension::Full(),
-    ftxui::Dimension::Fit(doc)
-  );
-
-  ftxui::Render(screen, doc);
-  screen.Print();
-
-  return res;
+  return 0;
 }
 
