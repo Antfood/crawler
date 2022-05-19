@@ -2,10 +2,13 @@
 #define CRAWLER_H
 
 #include "../include/directory.hpp"
+#include "../include/validator.hpp"
+#include "../include/input_component.hpp"
 
 class Crawler
 {
     Directory m_rootdir;
+    Validator m_validator;
     struct Private;
 
  public:

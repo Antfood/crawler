@@ -1,4 +1,5 @@
 #include "../include/validator.hpp"
+#include <exception>
 
 Changeset::Changeset(std::vector<std::string> &&fields) :
   m_fields(fields),
@@ -49,23 +50,55 @@ const std::string Changeset::error_to_string(const int pos)
 
     case bad_extension:
       return std::string("Bad Extension");
-  }
 
+    default:
+      return std::string("Unexecpected Error");
+  }
 };
+
+
+const std::string Changeset::first_error()
+{
+  int size =  m_errors.at(0).second + 2;
+
+  char buffer[size];
+  memset(buffer, ' ', size);
+  buffer[size - 1] = '\0';
+  buffer[size - 2] = '^';
+
+  std::string spaces = std::string(buffer);
+
+  return  spaces + error_to_string(0);
+};
+
+const std::string Changeset::other_errors()
+{
+  std::string buffer("");
+
+  // skip first error
+  for(int i = 1; i < m_errors.size(); i++)
+  {
+    if(i == m_errors.size() - 1)
+      buffer = buffer + error_to_string(i);
+  else
+  buffer = buffer + error_to_string(i) + " | ";
+  }
+  return buffer;
+  }
 
 void Changeset::invalidate(const error_type err, int pos)
 {
-    m_errors.push_back(std::make_pair(err, pos));
-    m_valid = false;
+  m_errors.push_back(std::make_pair(err, pos));
+m_valid = false;
 };
 
 Validator::Validator(const std::string &delimiter) :
-  m_delimiter(delimiter),
-  m_cursor(0)
+m_delimiter(delimiter),
+m_cursor(0)
 { };
 
 struct Validator::Private 
-{
+  {
   public:
     static void split_extension(Validator &self, const std::string &filename, std::vector<std::string> &output)
     {
@@ -110,25 +143,27 @@ struct Validator::Private
       return !std::regex_search (extension, std::regex("^.wav$"));
     };
 
-};
+  };
 
 Changeset Validator::split(const std::string &filename)
 {
   std::vector<std::string> output;
+  m_cursor = 0;
 
   while(1)
-  {
-    size_t pos = filename.find(m_delimiter, m_cursor);
-
-    if(pos == std::string::npos)
     {
-      Private::split_extension(*this, filename, output);
-      break;
-    };
+      size_t pos = filename.find(m_delimiter, m_cursor);
 
-    output.push_back(filename.substr(m_cursor, pos - m_cursor));
-    m_cursor = (pos + m_delimiter.length());
-  }
+      if(pos == std::string::npos)
+      {
+        Private::split_extension(*this, filename, output);
+        break;
+      };
+
+      output.push_back(filename.substr(m_cursor, pos - m_cursor));
+      m_cursor = (pos + m_delimiter.length());
+
+    }
 
   return Changeset(std::move(output));
 };
@@ -159,47 +194,51 @@ void Validator::validate_fields_count(Changeset &changeset)
 
 void Validator::validate_fields(Changeset &changeset)
 {
-  int field_index = 0;
-  int pos = 0;
 
-  for(auto &field : changeset.m_fields)
-  {
-    if(field_index == client &&  Private::is_not_valid_name(field))
-      changeset.invalidate(bad_client, pos);
+  if(!changeset.m_valid) /* do not validate invalid changeset */
+return;
 
-    if(field_index == project &&  Private::is_not_valid_name(field))
-      changeset.invalidate(bad_project, pos);
+int field_index = 0;
+int pos = 0;
 
-    if(field_index == name &&  Private::is_not_valid_name(field))
-      changeset.invalidate(bad_name, pos);
+for(auto &field : changeset.m_fields)
+{
+if(field_index == client &&  Private::is_not_valid_name(field))
+changeset.invalidate(bad_client, pos);
 
-    if(field_index == descritor &&  Private::is_not_valid_name(field))
-      changeset.invalidate(bad_descriptor, pos);
+if(field_index == project &&  Private::is_not_valid_name(field))
+changeset.invalidate(bad_project, pos);
 
-    if(field_index == date &&  Private::is_not_valid_date(field))
-      changeset.invalidate(bad_date, pos);
+if(field_index == name &&  Private::is_not_valid_name(field))
+changeset.invalidate(bad_name, pos);
 
-    if(field_index == key &&  Private::is_not_valid_key(field))
-      changeset.invalidate(bad_key, pos);
+if(field_index == descritor &&  Private::is_not_valid_name(field))
+changeset.invalidate(bad_descriptor, pos);
 
-    if(field_index == bpm &&  Private::is_not_valid_bpm(field))
-      changeset.invalidate(bad_bpm, pos); 
+if(field_index == date &&  Private::is_not_valid_date(field))
+changeset.invalidate(bad_date, pos);
 
-    if(field_index == ts &&  Private::is_not_valid_ts(field))
-      changeset.invalidate(bad_ts, pos); 
+if(field_index == key &&  Private::is_not_valid_key(field))
+changeset.invalidate(bad_key, pos);
 
-    if(field_index == composer &&  Private::is_not_valid_composer(field))
-      changeset.invalidate(bad_composer, pos); 
+if(field_index == bpm &&  Private::is_not_valid_bpm(field))
+changeset.invalidate(bad_bpm, pos); 
 
-    if(field_index == external_talent && Private::is_not_valid_name(field))
-      changeset.invalidate(bad_external_talent, pos); 
+if(field_index == ts &&  Private::is_not_valid_ts(field))
+changeset.invalidate(bad_ts, pos); 
 
-    if(field_index == ext && Private::is_not_valid_extension(field))
-      changeset.invalidate(bad_extension, pos); 
+if(field_index == composer &&  Private::is_not_valid_composer(field))
+changeset.invalidate(bad_composer, pos); 
 
-    pos += field.length() + 1; /* +1 to count delim */
-    field_index++;
-  }
+if(field_index == external_talent && Private::is_not_valid_name(field))
+changeset.invalidate(bad_external_talent, pos); 
+
+if(field_index == ext && Private::is_not_valid_extension(field))
+changeset.invalidate(bad_extension, pos); 
+
+pos += field.length() + 1; /* +1 to count delim */
+field_index++;
+}
 };
 
 
@@ -262,7 +301,7 @@ TEST_CASE("Validator")
     CHECK(changeset.m_valid == false);
     CHECK(changeset.m_errors.at(0).first == bad_delimiter);
     CHECK(changeset.m_errors.at(0).second == 29); // error at position 29 in the string.
-                                                  //
+    //
     CHECK(changeset.m_errors.at(1).first == bad_delimiter);
     CHECK(changeset.m_errors.at(1).second == 43); // error at position 39 in the string.
   };
@@ -421,6 +460,14 @@ TEST_CASE("Validator")
     CHECK(changeset.m_errors.at(0).first == bad_name);
     CHECK(changeset.m_errors.at(1).first == bad_date);
     CHECK(changeset.m_errors.at(2).first == bad_bpm);
+  }
+
+  SUBCASE("Edge case")
+  {
+
+    auto changeset = validator.split("BumbleBee_Anthem_TuneAPiano_ChillVersion__220229_Bb_105_4-4_BE_NXT.wavcursor");
+
+
   }
 
 };

@@ -1,6 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "../include/crawler.hpp"
 #include "../include/validator.hpp"
+#include "../include/input_component.hpp"
 
 int test()
 {
@@ -16,15 +17,12 @@ int test()
   return -1;
 }
 
-
 int main()
 {
- // Crawler crawler;
- // crawler.read_directory_tree();
- 
-  int res = test();
- 
 
-  return res;
+  Crawler crawler;
+  crawler.read_directory_tree();
+
+  return 0;
 }
 
