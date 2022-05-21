@@ -5,6 +5,8 @@
 #include <ctime>
 #include <sys/types.h>
 #include <dirent.h>
+#include <unistd.h>
+#include <pwd.h>
 #include <vector>
 #include <cstring>
 
@@ -23,7 +25,9 @@ private:
     std::string                 m_path;
 
 public:
-    Directory(const char* path);
+    Directory(); // will open user dir
+    explicit Directory(const char* path);
+    Directory(Directory &lhs) = default;
     ~Directory();
 
     void                        load_files();

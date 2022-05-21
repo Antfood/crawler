@@ -19,8 +19,8 @@ int test()
 
 int main()
 {
-
   Crawler crawler;
+  crawler.find_root_dir();
   crawler.read_directory_tree();
 
   return 0;

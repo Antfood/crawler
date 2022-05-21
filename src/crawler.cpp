@@ -16,6 +16,9 @@ struct Crawler::Private
 
       for(auto &file : current_dir.get_files())
       {
+        if(std::regex_search(file, std::regex(".*\\.rtf"))) /* skips .rtf files */
+            continue;
+
         Changeset changeset = self.m_validator.split(file);
         self.m_validator.validate_delimiter(changeset);
         self.m_validator.validate_fields_count(changeset);
@@ -32,10 +35,11 @@ struct Crawler::Private
   };
 
 Crawler::Crawler() :
-  m_rootdir(Directory(".")),
-  m_validator(Validator(DELIM))
+  m_validator(Validator(DELIM)),
+  m_rootdir(find_root_dir())
+{
+}
 
-{ }
 void Crawler::read_directory_tree()
 {
   try
@@ -48,6 +52,18 @@ void Crawler::read_directory_tree()
   }
 };
 
+Directory Crawler::find_root_dir()
+{
+  Directory home_dir; /* default constructor return home dir */
+
+  for (auto &subdir : home_dir.get_subdirectories())
+    if(std::regex_search(subdir.c_str(), std::regex("dropbox*", std::regex_constants::icase)))
+    {
+       return Directory(subdir.c_str());
+    };
+  return home_dir;
+};
+
 void Crawler::read_directory_tree(Directory &current_dir)
 {
   if(current_dir.get_dirname() == LIBRARY_DIR)
@@ -56,9 +72,9 @@ void Crawler::read_directory_tree(Directory &current_dir)
   if(current_dir.subdirectories_count() == 0)
     return;
 
-  for(auto &dir : current_dir.get_subdirectories())
+  for(auto &subdir : current_dir.get_subdirectories())
   {
-    Directory next_dir(dir.c_str());
+    Directory next_dir(subdir.c_str());
     read_directory_tree(next_dir);
   };
 };
