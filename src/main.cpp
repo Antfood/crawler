@@ -19,6 +19,7 @@ int test()
 
 int main()
 {
+  test();
   Crawler crawler;
   crawler.read_directory_tree();
 

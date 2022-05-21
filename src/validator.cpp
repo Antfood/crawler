@@ -78,10 +78,29 @@ void Changeset::invalidate (const error_type err, int pos)
   m_valid = false;
 }
 
+bool Changeset::has_error(error_type err)
+{
+  return std::any_of(m_errors.begin(), m_errors.end(), [err](auto &error){ return error.first == err;});
+};
+
 Validator::Validator (std::string delimiter) :
     m_delimiter (std::move(delimiter)),
     m_cursor (0)
 {}
+
+void Changeset::fill_empty_fields ()
+{
+  size_t fields_length = m_fields.size();
+
+  if(fields_length == FIELD_COUNT)
+     return;
+
+  while(fields_length != FIELD_COUNT)
+    {
+      m_fields.emplace_back (std::string("")); /* fill fields with empty strings */
+      fields_length++;
+    }
+}
 
 struct Validator::Private {
  public:

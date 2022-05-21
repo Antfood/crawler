@@ -27,7 +27,7 @@ struct Crawler::Private
         if(!changeset.m_valid)
         {
           std::string output;
-          UserInput ui(changeset, file, current_dir.get_path(), output);
+          UserInput ui(changeset, file, current_dir.get_path());
         }
 
       }

@@ -27,7 +27,6 @@ private:
 public:
     Directory(); // will open user dir
     explicit Directory(const char* path);
-    Directory(Directory &lhs) = default;
     ~Directory();
 
     void                        load_files();

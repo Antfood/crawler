@@ -54,7 +54,9 @@ struct Changeset
     std::string             error_to_string(int pos);
     std::string             other_errors();
     std::string             first_error();
+    void                    fill_empty_fields();
     void                    invalidate(error_type err, int pos);
+    bool                    has_error(error_type err);
 
 };
 
