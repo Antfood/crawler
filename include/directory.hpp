@@ -8,8 +8,7 @@
 #include <vector>
 #include <cstring>
 
-
-#define LIBRARY_DIR "LIBRARY"
+#define LIBRARY_DIR "02_LIBRARY"
 
 enum load_selection {none, files, directories, both};
 
@@ -17,14 +16,15 @@ class Directory
 {
 private:
     struct Private;
-    DIR                        *dp;
-    struct dirent              *dirp;
+    DIR                        *m_dp;
+    struct dirent              *m_dirp;
     std::vector<std::string>    m_files;
     std::vector<std::string>    m_subdirectories;
     std::string                 m_path;
 
 public:
     Directory(const char* path);
+    ~Directory();
 
     void                        load_files();
     std::string                &get_path();

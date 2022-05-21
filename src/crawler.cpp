@@ -25,7 +25,6 @@ struct Crawler::Private
         {
           std::string output;
           UserInput ui(changeset, file, current_dir.get_path(), output);
-          std::cout << output << std::endl;
         };
 
       };
@@ -33,21 +32,26 @@ struct Crawler::Private
   };
 
 Crawler::Crawler() :
-m_rootdir(Directory(".")),
-m_validator(Validator(DELIM))
+  m_rootdir(Directory(".")),
+  m_validator(Validator(DELIM))
 
 { }
 void Crawler::read_directory_tree()
 {
-  read_directory_tree(m_rootdir);
+  try
+  {
+    read_directory_tree(m_rootdir);
+  }
+  catch(std::exception &err)
+  {
+    std::cout << err.what() << "\n";
+  }
 };
 
 void Crawler::read_directory_tree(Directory &current_dir)
 {
   if(current_dir.get_dirname() == LIBRARY_DIR)
-  {
     Private::validate_files(*this, current_dir);
-  }
 
   if(current_dir.subdirectories_count() == 0)
     return;
