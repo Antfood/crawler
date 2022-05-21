@@ -1,48 +1,49 @@
 #include "../include/validator.hpp"
 #include <exception>
+#include <utility>
 
 Changeset::Changeset (std::vector<std::string> &&fields) :
     m_fields (fields),
     m_valid (true)
 {}
 
-const std::string Changeset::error_to_string (const int pos)
+std::string Changeset::error_to_string (const int pos)
 {
   error_type err = m_errors.at (pos).first;
 
   switch (err)
     {
-      case bad_delimiter:return std::string ("Bad Delimiter");
+      case bad_delimiter:return {"Bad Delimiter"};
 
-      case bad_field_count:return std::string ("Bad Field count");
+      case bad_field_count:return {"Bad Field count"};
 
-      case bad_client:return std::string ("Bad Client Name");
+      case bad_client:return {"Bad Client Name"};
 
-      case bad_project:return std::string ("Bad Project Name");
+      case bad_project:return {"Bad Project Name"};
 
-      case bad_name:return std::string ("Bad Recording Name");
+      case bad_name:return {"Bad Recording Name"};
 
-      case bad_descriptor:return std::string ("Bad Recording Descriptor Name");
+      case bad_descriptor:return {"Bad Recording Descriptor Name"};
 
-      case bad_date:return std::string ("Bad Date");
+      case bad_date:return {"Bad Date"};
 
-      case bad_key:return std::string ("Bad Key");
+      case bad_key:return {"Bad Key"};
 
-      case bad_bpm:return std::string ("Bad BPM");
+      case bad_bpm:return {"Bad BPM"};
 
-      case bad_ts:return std::string ("Bad Time Signature");
+      case bad_ts:return {"Bad Time Signature"};
 
-      case bad_composer:return std::string ("Bad Composer Name");
+      case bad_composer:return {"Bad Composer Name"};
 
-      case bad_external_talent:return std::string ("Bad External Talent");
+      case bad_external_talent:return {"Bad External Talent"};
 
-      case bad_extension:return std::string ("Bad Extension");
+      case bad_extension:return {"Bad Extension"};
 
-      default:return std::string ("Unexecpected Error");
+      default:return {"Unexecpected Error"};
     }
 }
 
-const std::string Changeset::first_error ()
+std::string Changeset::first_error ()
 {
   size_t size = m_errors.at (0).second + 2;
 
@@ -56,7 +57,7 @@ const std::string Changeset::first_error ()
   return spaces + error_to_string (0);
 }
 
-const std::string Changeset::other_errors ()
+std::string Changeset::other_errors ()
 {
   std::string buffer;
 
@@ -64,9 +65,9 @@ const std::string Changeset::other_errors ()
   for (int i = 1; i < m_errors.size (); i++)
     {
       if (i == m_errors.size () - 1)
-        buffer = buffer + error_to_string (i);
+        buffer += error_to_string (i);
       else
-        buffer = buffer + error_to_string (i) + " | ";
+        buffer += error_to_string (i) + " | ";
     }
   return buffer;
 }
@@ -77,8 +78,8 @@ void Changeset::invalidate (const error_type err, int pos)
   m_valid = false;
 }
 
-Validator::Validator (const std::string &delimiter) :
-    m_delimiter (delimiter),
+Validator::Validator (std::string delimiter) :
+    m_delimiter (std::move(delimiter)),
     m_cursor (0)
 {}
 
@@ -149,17 +150,17 @@ Changeset Validator::split (const std::string &filename)
 
     }
 
-  return Changeset (std::move (output));
+  return Changeset(std::move (output));
 }
 
 void Validator::validate_delimiter (Changeset &changeset)
 {
-  int pos = 0;
+  size_t pos = 0;
 
   for (auto &field : changeset.m_fields)
     {
       if (field.length () == 0)
-        changeset.invalidate (bad_delimiter, pos);
+        changeset.invalidate (bad_delimiter, static_cast<int>(pos));
 
       pos += field.length () + 1; /* +1 to count delim */
     }
@@ -173,7 +174,7 @@ void Validator::validate_fields_count (Changeset &changeset)
   size_t field_count = changeset.m_fields.size ();
 
   if (field_count != FIELD_COUNT)
-    changeset.invalidate (bad_field_count, field_count);
+    changeset.invalidate (bad_field_count, static_cast<int>(field_count));
 }
 
 void Validator::validate_fields (Changeset &changeset)
@@ -196,7 +197,7 @@ void Validator::validate_fields (Changeset &changeset)
       if (field_index == name && Private::is_not_valid_name (field))
         changeset.invalidate (bad_name, pos);
 
-      if (field_index == descritor && Private::is_not_valid_name (field))
+      if (field_index == descriptor && Private::is_not_valid_name (field))
         changeset.invalidate (bad_descriptor, pos);
 
       if (field_index == date && Private::is_not_valid_date (field))
@@ -220,7 +221,7 @@ void Validator::validate_fields (Changeset &changeset)
       if (field_index == ext && Private::is_not_valid_extension (field))
         changeset.invalidate (bad_extension, pos);
 
-      pos += field.length () + 1; /* +1 to count delim */
+      pos += static_cast<int>(field.length ()) + 1; /* +1 to count delim */
       field_index++;
     }
 }

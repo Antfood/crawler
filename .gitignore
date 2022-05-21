@@ -4,3 +4,6 @@ build/
 cmake-build-debug/
 .ccls-cache/
 .idea/
+.DS_Store
+.gdb_history
+debug_build/

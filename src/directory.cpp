@@ -8,7 +8,7 @@ struct Directory::Private {
 
     if(!self.m_dp)
     {
-      std::string msg = "Error: opendir: ";
+      std::string msg = "Error: open dir: ";
       msg += strerror(errno);
       throw std::runtime_error(msg.c_str());
     }
@@ -26,7 +26,7 @@ struct Directory::Private {
         self.m_subdirectories.push_back(Private::concat_path(self, self.m_dirp->d_name));
 
       if(is_file_selected(selection) && self.m_dirp->d_type == DT_REG)
-        self.m_files.push_back(std::string(self.m_dirp->d_name));
+        self.m_files.emplace_back(std::string(self.m_dirp->d_name));
     }
   };
 
@@ -47,17 +47,19 @@ struct Directory::Private {
 };
 
 /* default constructor opens the user home directory */
-Directory::Directory()
+Directory::Directory() :
+m_path(get_home_path()),
+m_dp(nullptr),
+m_dirp(nullptr)
 {
-  struct passwd *pw = getpwuid(getuid());
-  m_path = std::string(pw->pw_dir);
-
   Private::open_directory(*this);
   Private::load_directory_content(*this, directories);
 }
 
 Directory::Directory(const char *path)
-  : m_path(std::string(path))
+  : m_path(std::string(path)),
+    m_dp(nullptr),
+    m_dirp(nullptr)
 {
   Private::open_directory(*this);
   Private::load_directory_content(*this, directories);
@@ -81,6 +83,12 @@ std::string &Directory::get_path()
   return m_path;
 }
 
+std::string Directory::get_home_path()
+{
+  struct passwd *pw = getpwuid(getuid());
+  return pw->pw_dir;
+}
+
 std::vector<std::string> &Directory::get_files()
 {
   return m_files;
@@ -96,12 +104,12 @@ size_t Directory::subdirectories_count()
   return m_subdirectories.size();
 }
 
-const std::string Directory::get_dirname()
+std::string Directory::get_dirname()
 {
   if(m_path == ".")
-    return std::string(".");
+    return ".";
 
-  std::size_t slash_position = m_path.find_last_of("/");
+  std::size_t slash_position = m_path.find_last_of('/');
   return m_path.substr(slash_position + 1, m_path.length());
 }
 

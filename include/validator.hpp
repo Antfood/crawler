@@ -6,17 +6,15 @@
 #include <iostream>
 #include <vector>
 
-#define REGEX_LEN 10
-#define DOT "."
 #define DELIM "_"
-#define FIELD_COUNT 11 /* 10 fields + extention */
+#define FIELD_COUNT 11  /* 10 fields + extension */
 
 enum field_type 
 {
   client           = 0,
   project          = 1,
   name             = 2,
-  descritor        = 3,
+  descriptor       = 3,
   date             = 4,
   key              = 5,
   bpm              = 6,
@@ -51,12 +49,12 @@ struct Changeset
     std::vector<ValidationError>   m_errors;
     bool                           m_valid;
 
-    Changeset(std::vector<std::string> &&fields);
+    explicit Changeset(std::vector<std::string> &&fields);
 
-    const std::string             error_to_string(const int pos);
-    const std::string             other_errors();
-    const std::string             first_error();
-    void                          invalidate(const error_type err, int pos);
+    std::string             error_to_string(int pos);
+    std::string             other_errors();
+    std::string             first_error();
+    void                    invalidate(error_type err, int pos);
 
 };
 
@@ -67,13 +65,12 @@ class Validator
   struct                           Private;
 
   public:
-  Validator(const std::string &delimeter);
+  explicit Validator(std::string delimeter);
 
   Changeset                  split(const std::string &filename);
-  void                       validate_delimiter(Changeset &changeset);
-  void                       validate_fields_count(Changeset &changeset);
-  void                       validate_fields(Changeset &changeset);
-  static std::string         type_to_string(field_type type);
+  static void                validate_fields(Changeset &changeset);
+  static void                validate_delimiter(Changeset &changeset);
+  static void                validate_fields_count(Changeset &changeset);
 };
 
 #endif

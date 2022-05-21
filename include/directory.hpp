@@ -35,10 +35,12 @@ public:
     std::vector<std::string>   &get_files();
     std::vector<std::string>   &get_subdirectories();
     size_t                      subdirectories_count();
-    const std::string           get_dirname();
+    std::string                 get_dirname();
 
-    void                        print_files();
-    void                        print_directories();
+    void                       print_files();
+    void                       print_directories();
+
+    static std::string          get_home_path();
 
 };
 
