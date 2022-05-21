@@ -3,3 +3,4 @@ obj/*
 build/
 cmake-build-debug/
 .ccls-cache/
+.idea/
