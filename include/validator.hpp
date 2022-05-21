@@ -48,8 +48,9 @@ struct Changeset
     std::vector<std::string>       m_fields;
     std::vector<ValidationError>   m_errors;
     bool                           m_valid;
+    bool                           m_was_cleared;
 
-    explicit Changeset(std::vector<std::string> &&fields);
+  explicit Changeset(std::vector<std::string> &&fields);
 
     std::string             error_to_string(int pos);
     std::string             other_errors();
@@ -57,7 +58,7 @@ struct Changeset
     void                    fill_empty_fields();
     void                    invalidate(error_type err, int pos);
     bool                    has_error(error_type err);
-
+    void                    clear_errors();
 };
 
 class Validator

@@ -25,4 +25,11 @@ class UserInput
 };
 
 
+class Warning
+{
+ public:
+    Warning();
+};
+
+
 #endif

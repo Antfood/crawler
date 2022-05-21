@@ -1,5 +1,15 @@
 #include "../include/input_component.hpp"
 
+
+Warning::Warning()
+{
+ Element el = vbox({ text("    Invalid, Please try again.    ")}) | borderDouble | center;
+
+  auto screen = Screen::Create(Dimension::Full(), Dimension::Fit(el));
+  Render(screen, el);
+  screen.Print();
+}
+
 struct UserInput::Private
 {
   static Component create_event (ScreenInteractive &screen, Component &renderer)
@@ -26,7 +36,6 @@ struct UserInput::Private
      else
        return text("");
    };
-
 };
 
 UserInput::UserInput(Changeset &changeset, const std::string &filename, const std::string &path)
@@ -44,7 +53,6 @@ UserInput::UserInput(Changeset &changeset, const std::string &filename, const st
   Component composer_input              = Input(&changeset.m_fields[composer], "Missing Composer Initials");
   Component talent_input                = Input(&changeset.m_fields[external_talent], "Missing External Talent or NXT");
 
-
   Component project_container = Container::Vertical({
                                                      client_input,
                                                      project_input,
@@ -60,11 +68,11 @@ UserInput::UserInput(Changeset &changeset, const std::string &filename, const st
 
   Component renderer = Renderer(project_container, [&] {
     return  vbox({
-               text(filename) | color(Color::Blue),
-               text(changeset.first_error()) | color(Color::Red),
+               text(" " + filename) | color(Color::Blue),
+               text(" " + changeset.first_error()) | color(Color::Red),
                Private::render_more_errors (changeset),
                separator(),
-               text("Found at -> " + path +  ". Press 'o' to open in Finder.") | color(Color::Cyan),
+               text("  Found at -> " + path +  ". Press 'o' to open in Finder.") | color(Color::Cyan),
                separator(),
                hbox(text(" Client:"), client_input->Render()  | color(Private::which_color (changeset, bad_client))),
                hbox(text(" Project: "), project_input->Render() | color(Private::which_color (changeset, bad_project)) ),

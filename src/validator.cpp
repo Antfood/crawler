@@ -4,7 +4,8 @@
 
 Changeset::Changeset (std::vector<std::string> &&fields) :
     m_fields (fields),
-    m_valid (true)
+    m_valid (true),
+    m_was_cleared(false)
 {}
 
 std::string Changeset::error_to_string (const int pos)
@@ -14,29 +15,17 @@ std::string Changeset::error_to_string (const int pos)
   switch (err)
     {
       case bad_delimiter:return {"Bad Delimiter"};
-
       case bad_field_count:return {"Bad Field count"};
-
       case bad_client:return {"Bad Client Name"};
-
       case bad_project:return {"Bad Project Name"};
-
       case bad_name:return {"Bad Recording Name"};
-
       case bad_descriptor:return {"Bad Recording Descriptor Name"};
-
       case bad_date:return {"Bad Date"};
-
       case bad_key:return {"Bad Key"};
-
       case bad_bpm:return {"Bad BPM"};
-
       case bad_ts:return {"Bad Time Signature"};
-
       case bad_composer:return {"Bad Composer Name"};
-
       case bad_external_talent:return {"Bad External Talent"};
-
       case bad_extension:return {"Bad Extension"};
 
       default:return {"Unexecpected Error"};
@@ -81,7 +70,14 @@ void Changeset::invalidate (const error_type err, int pos)
 bool Changeset::has_error(error_type err)
 {
   return std::any_of(m_errors.begin(), m_errors.end(), [err](auto &error){ return error.first == err;});
-};
+}
+
+void Changeset::clear_errors ()
+{
+  m_errors.clear();
+  m_valid = true;
+  m_was_cleared = true;
+}
 
 Validator::Validator (std::string delimiter) :
     m_delimiter (std::move(delimiter)),
@@ -473,6 +469,4 @@ TEST_CASE("Validator")
       auto changeset = validator.split ("BumbleBee_Anthem_TuneAPiano_ChillVersion__220229_Bb_105_4-4_BE_NXT.wavcursor");
 
     }
-
 }
-
