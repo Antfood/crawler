@@ -4,7 +4,7 @@
 Changeset::Changeset (std::vector<std::string> &&fields) :
     m_fields (fields),
     m_valid (true)
-{};
+{}
 
 const std::string Changeset::error_to_string (const int pos)
 {
@@ -40,7 +40,7 @@ const std::string Changeset::error_to_string (const int pos)
 
       default:return std::string ("Unexecpected Error");
     }
-};
+}
 
 const std::string Changeset::first_error ()
 {
@@ -54,7 +54,7 @@ const std::string Changeset::first_error ()
   std::string spaces = std::string (buffer);
 
   return spaces + error_to_string (0);
-};
+}
 
 const std::string Changeset::other_errors ()
 {
@@ -75,12 +75,12 @@ void Changeset::invalidate (const error_type err, int pos)
 {
   m_errors.emplace_back (std::make_pair (err, pos));
   m_valid = false;
-};
+}
 
 Validator::Validator (const std::string &delimiter) :
     m_delimiter (delimiter),
     m_cursor (0)
-{};
+{}
 
 struct Validator::Private {
  public:
@@ -142,7 +142,7 @@ Changeset Validator::split (const std::string &filename)
         {
           Private::split_extension (*this, filename, output);
           break;
-        };
+        }
 
       output.push_back (filename.substr (m_cursor, pos - m_cursor));
       m_cursor = (pos + m_delimiter.length ());
@@ -150,7 +150,7 @@ Changeset Validator::split (const std::string &filename)
     }
 
   return Changeset (std::move (output));
-};
+}
 
 void Validator::validate_delimiter (Changeset &changeset)
 {
@@ -162,8 +162,8 @@ void Validator::validate_delimiter (Changeset &changeset)
         changeset.invalidate (bad_delimiter, pos);
 
       pos += field.length () + 1; /* +1 to count delim */
-    };
-};
+    }
+}
 
 void Validator::validate_fields_count (Changeset &changeset)
 {
@@ -174,7 +174,7 @@ void Validator::validate_fields_count (Changeset &changeset)
 
   if (field_count != FIELD_COUNT)
     changeset.invalidate (bad_field_count, field_count);
-};
+}
 
 void Validator::validate_fields (Changeset &changeset)
 {
@@ -223,7 +223,7 @@ void Validator::validate_fields (Changeset &changeset)
       pos += field.length () + 1; /* +1 to count delim */
       field_index++;
     }
-};
+}
 
 TEST_CASE("Validator")
 {
@@ -237,7 +237,7 @@ TEST_CASE("Validator")
 
       for (size_t i = 0; i < output.m_fields.size (); i++)
         CHECK(output.m_fields[i] == expected[i]);
-    };
+    }
 
   SUBCASE("split double delim produces empty field")
     {
@@ -247,7 +247,7 @@ TEST_CASE("Validator")
 
       for (size_t i = 0; i < output.m_fields.size (); i++)
         CHECK(output.m_fields[i] == expected[i]);
-    };
+    }
 
   SUBCASE("split multiple delim produces multiple empty field")
     {
@@ -257,7 +257,7 @@ TEST_CASE("Validator")
 
       for (size_t i = 0; i < output.m_fields.size (); i++)
         CHECK(output.m_fields[i] == expected[i]);
-    };
+    }
 
   SUBCASE("validates valid delim")
     {
@@ -267,7 +267,7 @@ TEST_CASE("Validator")
       CHECK(changeset.m_valid == true);
       CHECK(changeset.m_errors.size () == 0);
 
-    };
+    }
 
   SUBCASE("validates single bad delim")
     {
@@ -277,7 +277,7 @@ TEST_CASE("Validator")
       CHECK(changeset.m_valid == false);
       CHECK(changeset.m_errors.at (0).first == bad_delimiter);
       CHECK(changeset.m_errors.at (0).second == 29); // error at position 29 in the string.
-    };
+    }
 
   SUBCASE("validates multiple bad delim")
     {
@@ -290,7 +290,7 @@ TEST_CASE("Validator")
       //
       CHECK(changeset.m_errors.at (1).first == bad_delimiter);
       CHECK(changeset.m_errors.at (1).second == 43); // error at position 39 in the string.
-    };
+    }
 
   SUBCASE("validates bad field count")
     {
@@ -301,7 +301,7 @@ TEST_CASE("Validator")
       CHECK(changeset.m_valid == false);
       CHECK(changeset.m_errors.at (0).first == bad_field_count);
       CHECK(changeset.m_errors.at (0).second == 12); // this error returns the number of fields
-    };
+    }
 
   SUBCASE("validates bad client")
     {
@@ -313,7 +313,7 @@ TEST_CASE("Validator")
       CHECK(changeset.m_valid == false);
       CHECK(changeset.m_errors.at (0).first == bad_client);
       CHECK(changeset.m_errors.at (0).second == 0);
-    };
+    }
 
   SUBCASE("validates bad project")
     {
@@ -325,7 +325,7 @@ TEST_CASE("Validator")
       CHECK(changeset.m_valid == false);
       CHECK(changeset.m_errors.at (0).first == bad_project);
       CHECK(changeset.m_errors.at (0).second == 7);
-    };
+    }
 
   SUBCASE("validates bad recording name")
     {
@@ -454,5 +454,5 @@ TEST_CASE("Validator")
 
     }
 
-};
+}
 

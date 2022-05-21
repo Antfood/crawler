@@ -28,9 +28,9 @@ struct Crawler::Private
         {
           std::string output;
           UserInput ui(changeset, file, current_dir.get_path(), output);
-        };
+        }
 
-      };
+      }
     };
   };
 
@@ -50,7 +50,7 @@ void Crawler::read_directory_tree()
   {
     std::cout << err.what() << "\n";
   }
-};
+}
 
 Directory Crawler::find_root_dir()
 {
@@ -60,9 +60,9 @@ Directory Crawler::find_root_dir()
     if(std::regex_search(subdir.c_str(), std::regex("dropbox*", std::regex_constants::icase)))
     {
        return Directory(subdir.c_str());
-    };
+    }
   return home_dir;
-};
+}
 
 void Crawler::read_directory_tree(Directory &current_dir)
 {
@@ -76,6 +76,6 @@ void Crawler::read_directory_tree(Directory &current_dir)
   {
     Directory next_dir(subdir.c_str());
     read_directory_tree(next_dir);
-  };
-};
+  }
+}
 

@@ -18,7 +18,7 @@ struct Directory::Private {
   {
     while((self.m_dirp = readdir(self.m_dp))!= nullptr)
     {
-      /* ignore invisible filesm current dir  and prv dir */
+      /* ignore invisible files current dir  and prv dir */
       if(self.m_dirp->d_name[0] == '.' || (strcmp(self.m_dirp->d_name, "..") == 0))
         continue;
 
@@ -54,7 +54,7 @@ Directory::Directory()
 
   Private::open_directory(*this);
   Private::load_directory_content(*this, directories);
-};
+}
 
 Directory::Directory(const char *path)
   : m_path(std::string(path))
@@ -62,39 +62,39 @@ Directory::Directory(const char *path)
   Private::open_directory(*this);
   Private::load_directory_content(*this, directories);
 
-};
+}
 
 Directory::~Directory()
 {
   closedir(m_dp);
-};
+}
 
 void Directory::load_files()
 {
 
   m_dp = opendir(m_path.c_str());
   Private::load_directory_content(*this, files);
-};
+}
 
 std::string &Directory::get_path()
 {
   return m_path;
-};
+}
 
 std::vector<std::string> &Directory::get_files()
 {
   return m_files;
-};
+}
 
 std::vector<std::string> &Directory::get_subdirectories()
 {
   return m_subdirectories;
-};
+}
 
 size_t Directory::subdirectories_count()
 {
   return m_subdirectories.size();
-};
+}
 
 const std::string Directory::get_dirname()
 {
@@ -103,21 +103,21 @@ const std::string Directory::get_dirname()
 
   std::size_t slash_position = m_path.find_last_of("/");
   return m_path.substr(slash_position + 1, m_path.length());
-};
+}
 
 
 void Directory::print_files()
 {
   for(auto &file : m_files)
     std::cout << file << std::endl;
-};
+}
 
 void Directory::print_directories()
 {
   for(auto &directory : m_subdirectories)
     std::cout << directory << std::endl;
 
-};
+}
 
 
 
