@@ -16,7 +16,7 @@ warning the user.
 
 ## Usage
 You can launch the app by double-clicking on its icon on a finder window. This will prompt a terminal
-which will run serve the user interface.
+which will serve as the user interface for crawler.
 
 Alternatively, you can open your favorite terminal emulator and execute from the command line. For example, if the 
 app is in your Desktop
