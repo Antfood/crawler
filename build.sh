@@ -1,4 +1,5 @@
 if [ "$1" == "--build" ]; then
+  mkdir -p build
   cd build; cmake ../; make; cd .. 
 fi
 

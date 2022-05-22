@@ -17,7 +17,8 @@ app is in your Desktop
        $ ./crawler
 
 ## Build
-Create a `build` directory and the script `build.sh` to compile.
+
+Use the script `build.sh` to build and compile.
 
         ./build.sh --build 
 
@@ -29,4 +30,4 @@ Compile and run the binary.
 
         ./build.sh --release
 
-Compiles and copy the binary to the root of the `Dropbox (Antfood, LLC)`.
+Compiles and copy the binary to `Dropbox (Antfood, LLC)/ANTFOOD WORLDWIDE/`.
