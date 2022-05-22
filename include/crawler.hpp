@@ -3,7 +3,8 @@
 #include <cstdio>
 #include "../include/directory.hpp"
 #include "../include/validator.hpp"
-#include "../include/input_component.hpp"
+#include "../include/user_input.hpp"
+#include "../include/warning.hpp"
 
 class Crawler
 {

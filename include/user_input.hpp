@@ -12,8 +12,6 @@
 
  using namespace ftxui;
 
- enum warning_type {error, success, skipped, quit};
-
 class UserInput
 {
   private:
@@ -24,13 +22,4 @@ class UserInput
     UserInput (Changeset &changeset, const std::string &path);
 
 };
-
-class Warning
-{
- public:
-    Warning(const std::string &message, warning_type type);
-    static Color select_color(warning_type type);
-};
-
-
 #endif
