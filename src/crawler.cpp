@@ -91,7 +91,7 @@ Directory Crawler::find_root_dir ()
   for (auto &subdir : home_dir.get_subdirectories ())
     if (std::regex_search (subdir.c_str (), std::regex ("dropbox*", std::regex_constants::icase)))
    {
-     Warning("Welcome! Scanning your for library files...", welcome);
+     Warning("Welcome! Scanning for library audio files...", welcome);
      return Directory (subdir.c_str ());
    }
 
