@@ -2,6 +2,23 @@
 
 struct Crawler::Private {
 
+  static void rename_when_valid(Changeset &changeset, Directory &current_dir, const std::string &path_to_rename)
+  {
+    if(changeset.m_valid)
+      {
+        std::string old_path = current_dir.append_to_path(path_to_rename);
+        std::string new_path = current_dir.append_to_path(changeset.build_path());
+        int result = rename(old_path.c_str(), new_path.c_str());
+
+        if(result != 0)
+          {
+            std::string msg("Error renaming file. ");
+            msg += strerror(errno);
+            throw std::runtime_error(msg.c_str());
+          }
+      }
+  };
+
   static void validate_changeset (Changeset &changeset, const std::string &current_dir)
   {
     Validator::validate_delimiter (changeset);
@@ -40,12 +57,12 @@ struct Crawler::Private {
 
         Changeset changeset = self.m_validator.split (file);
         validate_changeset (changeset, current_dir.get_path ());
-
         if(changeset.m_quit)
           {
             Warning("Goodbye...", quit);
             exit (0);
           }
+        rename_when_valid (changeset, current_dir, file);
       }
   }
 };

@@ -35,9 +35,7 @@ public:
     std::vector<std::string>   &get_subdirectories();
     size_t                      subdirectories_count();
     std::string                 get_dirname();
-
-    void                       print_files();
-    void                       print_directories();
+    std::string                 append_to_path(const std::string &to_append);
 
     static std::string          get_home_path();
 

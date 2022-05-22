@@ -1,6 +1,6 @@
 #ifndef CRAWLER_H
 #define CRAWLER_H
-
+#include <cstdio>
 #include "../include/directory.hpp"
 #include "../include/validator.hpp"
 #include "../include/input_component.hpp"

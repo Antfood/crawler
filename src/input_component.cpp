@@ -76,6 +76,8 @@ struct UserInput::Private
 
 UserInput::UserInput (Changeset &changeset, const std::string &path)
 {
+
+  std::cout << "\n\n";
   changeset.fill_empty_fields ();
 
   Component client_input                = Input(&changeset.m_fields[client], "Missing Client Name");

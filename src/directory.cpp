@@ -113,19 +113,11 @@ std::string Directory::get_dirname()
   return m_path.substr(slash_position + 1, m_path.length());
 }
 
-
-void Directory::print_files()
+std::string Directory::append_to_path(const std::string &to_append)
 {
-  for(auto &file : m_files)
-    std::cout << file << std::endl;
-}
+  return Private::concat_path (*this, to_append.c_str());
+};
 
-void Directory::print_directories()
-{
-  for(auto &directory : m_subdirectories)
-    std::cout << directory << std::endl;
-
-}
 
 
 
