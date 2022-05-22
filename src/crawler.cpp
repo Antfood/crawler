@@ -2,7 +2,7 @@
 
 struct Crawler::Private {
 
-  static void validate_changeset (Changeset &changeset, const std::string &file, const std::string &current_dir)
+  static void validate_changeset (Changeset &changeset, const std::string &current_dir)
   {
     Validator::validate_delimiter (changeset);
     Validator::validate_fields_count (changeset);
@@ -13,16 +13,13 @@ struct Crawler::Private {
 
     if (!changeset.m_valid)
       {
-        if(changeset.was_bad_field_count())
-            changeset.fill_empty_fields();
-
-        UserInput ui (changeset, file, current_dir);
+        UserInput ui (changeset, current_dir);
 
         if(changeset.m_quit)
            return;
 
         changeset.clear_errors ();
-        validate_changeset (changeset, file, current_dir);
+        validate_changeset (changeset, current_dir);
       }
   };
 
@@ -36,7 +33,7 @@ struct Crawler::Private {
           continue;
 
         Changeset changeset = self.m_validator.split (file);
-        validate_changeset (changeset, file, current_dir.get_dirname ());
+        validate_changeset (changeset, current_dir.get_dirname ());
 
         if(changeset.m_quit)
             exit(0);

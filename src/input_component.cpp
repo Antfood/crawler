@@ -1,6 +1,5 @@
 #include "../include/input_component.hpp"
 
-
 Warning::Warning()
 {
  Element el = vbox({ text("    Invalid, Please try again.    ")}) | borderDouble | center;
@@ -51,7 +50,7 @@ struct UserInput::Private
    };
 };
 
-UserInput::UserInput(Changeset &changeset, const std::string &filename, const std::string &path)
+UserInput::UserInput (Changeset &changeset, const std::string &path)
 {
   changeset.fill_empty_fields ();
 
@@ -81,7 +80,7 @@ UserInput::UserInput(Changeset &changeset, const std::string &filename, const st
 
   Component renderer = Renderer(project_container, [&] {
     return  vbox({
-               bold(text(" " + filename)) | color(Color::White),
+               bold(text(" " + changeset.build_path())) | color(Color::White),
                text(" " + changeset.first_error()) | color(Color::Red),
                Private::render_more_errors (changeset),
                separator(),

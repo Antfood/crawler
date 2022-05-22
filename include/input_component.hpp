@@ -20,7 +20,7 @@ class UserInput
      struct Private;
 
   public:
-    UserInput(Changeset &changeset, const std::string &filename, const std::string &path);
+    UserInput (Changeset &changeset, const std::string &path);
 
 };
 

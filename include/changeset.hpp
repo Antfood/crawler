@@ -4,6 +4,7 @@
 #include <string>
 #include <regex>
 
+#define DELIM "_"
 #define FIELD_COUNT 11  /* 10 fields + extension */
 
 enum error_type
@@ -43,6 +44,7 @@ struct Changeset
   bool                    has_error(error_type err);
   void                    clear_errors();
   bool                    was_bad_field_count();
+  std::string             build_path();
 };
 
 #endif

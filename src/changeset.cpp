@@ -108,3 +108,19 @@ void Changeset::fill_empty_fields ()
       fields_length++;
     }
 }
+
+std::string Changeset::build_path()
+{
+  std::string result;
+  int count = 0;
+
+  for(auto &field : m_fields)
+  {
+    result += field;
+     if(count < FIELD_COUNT - 2) /* do not add delim for extension */
+       result += DELIM;
+    count++;
+  }
+
+  return result;
+}

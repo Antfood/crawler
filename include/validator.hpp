@@ -8,10 +8,7 @@
 #include <vector>
 #include <exception>
 #include <utility>
-
-#define DELIM "_"
-
-enum field_type 
+enum field_type
 {
   client           = 0,
   project          = 1,
