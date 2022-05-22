@@ -5,6 +5,7 @@
 Changeset::Changeset (std::vector<std::string> &&fields) :
     m_fields (fields),
     m_valid (true),
+    m_quit(false),
     m_was_cleared(false)
 {}
 
@@ -28,7 +29,7 @@ std::string Changeset::error_to_string (const int pos)
       case bad_external_talent:return {"Bad External Talent"};
       case bad_extension:return {"Bad Extension"};
 
-      default:return {"Unexecpected Error"};
+      default:return {"Unexpected Error"};
     }
 }
 
@@ -79,10 +80,10 @@ void Changeset::clear_errors ()
   m_was_cleared = true;
 }
 
-Validator::Validator (std::string delimiter) :
-    m_delimiter (std::move(delimiter)),
-    m_cursor (0)
-{}
+bool Changeset::was_bad_field_count ()
+{
+  return m_errors.at(0).first == bad_field_count;
+}
 
 void Changeset::fill_empty_fields ()
 {
@@ -91,9 +92,19 @@ void Changeset::fill_empty_fields ()
   if(fields_length == FIELD_COUNT)
      return;
 
-  while(fields_length != FIELD_COUNT)
+  auto last_field = m_fields.at(fields_length - 1);
+  bool is_extension = std::regex_search(last_field, std::regex("^.[a-zA-Z]{2,3}"));
+
+  if(is_extension)
+      m_fields.pop_back();
+
+  while (fields_length <= FIELD_COUNT)
     {
-      m_fields.emplace_back (std::string("")); /* fill fields with empty strings */
+      if (is_extension && fields_length == FIELD_COUNT)
+        m_fields.emplace_back (last_field); /* fill fields with empty strings */
+      else
+        m_fields.emplace_back (std::string ("?")); /* fill fields with empty strings */
+
       fields_length++;
     }
 }
@@ -144,6 +155,11 @@ struct Validator::Private {
   };
 
 };
+
+Validator::Validator (std::string delimiter) :
+    m_delimiter (std::move(delimiter)),
+    m_cursor (0)
+{}
 
 Changeset Validator::split (const std::string &filename)
 {

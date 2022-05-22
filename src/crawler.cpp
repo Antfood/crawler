@@ -2,25 +2,31 @@
 
 struct Crawler::Private {
 
-  static void validate_ui (Changeset &changeset, const std::string &file, const std::string &current_dir)
+  static void validate_changeset (Changeset &changeset, const std::string &file, const std::string &current_dir)
   {
-
-    if(changeset.m_was_cleared)
-       Warning();
-
     Validator::validate_delimiter (changeset);
     Validator::validate_fields_count (changeset);
     Validator::validate_fields (changeset);
 
+    if(!changeset.m_valid && changeset.m_was_cleared)
+      Warning();
+
     if (!changeset.m_valid)
       {
+        if(changeset.was_bad_field_count())
+            changeset.fill_empty_fields();
+
         UserInput ui (changeset, file, current_dir);
+
+        if(changeset.m_quit)
+           return;
+
         changeset.clear_errors ();
-        validate_ui (changeset, file, current_dir);
+        validate_changeset (changeset, file, current_dir);
       }
   };
 
-  static void validate_files (Crawler &self, Directory &current_dir)
+  static void validate_directory_files (Crawler &self, Directory &current_dir)
   {
     current_dir.load_files ();
 
@@ -30,9 +36,10 @@ struct Crawler::Private {
           continue;
 
         Changeset changeset = self.m_validator.split (file);
+        validate_changeset (changeset, file, current_dir.get_dirname ());
 
-        validate_ui (changeset, file, current_dir.get_dirname ());
-
+        if(changeset.m_quit)
+            exit(0);
       }
   }
 };
@@ -40,19 +47,18 @@ struct Crawler::Private {
 Crawler::Crawler () :
     m_validator (Validator (DELIM)),
     m_rootdir (find_root_dir ())
-{
-}
+{}
 
 void Crawler::read_directory_tree ()
 {
   try
-    {
-      read_directory_tree (m_rootdir);
-    }
+ {
+    read_directory_tree (m_rootdir);
+ }
   catch (std::exception &err)
-    {
-      std::cout << err.what () << "\n";
-    }
+ {
+    std::cout << err.what () << "\n";
+ }
 }
 
 Directory Crawler::find_root_dir ()
@@ -61,16 +67,14 @@ Directory Crawler::find_root_dir ()
 
   for (auto &subdir : home_dir.get_subdirectories ())
     if (std::regex_search (subdir.c_str (), std::regex ("dropbox*", std::regex_constants::icase)))
-      {
-        return Directory (subdir.c_str ());
-      }
+      return Directory (subdir.c_str ());
   return home_dir;
 }
 
 void Crawler::read_directory_tree (Directory &current_dir)
 {
   if (current_dir.get_dirname () == LIBRARY_DIR)
-    Private::validate_files (*this, current_dir);
+    Private::validate_directory_files (*this, current_dir);
 
   if (current_dir.subdirectories_count () == 0)
     return;

@@ -1,7 +1,10 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "../include/crawler.hpp"
-#include "../include/validator.hpp"
-#include "../include/input_component.hpp"
+
+// Copyright 2020 Arthur Sonzogni. All rights reserved.
+// Use of this source code is governed by the MIT license that can be found in
+// the LICENSE file.
+
 
 int test()
 {
@@ -19,9 +22,10 @@ int test()
 
 int main()
 {
-  test();
+ // test();
   Crawler crawler;
   crawler.read_directory_tree();
+
 
   return 0;
 }

@@ -12,7 +12,7 @@ Warning::Warning()
 
 struct UserInput::Private
 {
-  static Component create_event (ScreenInteractive &screen, Component &renderer)
+  static Component create_event (Changeset &changeset, ScreenInteractive &screen, Component &renderer)
   {
     return CatchEvent (renderer, [&] (Event const &event)
     {
@@ -21,6 +21,19 @@ struct UserInput::Private
           screen.ExitLoopClosure () ();
           return true;
         }
+
+        if(event == Event::Special({6})) // CTRL +  F
+        {
+          std::cout << "ctrl + F!" << "\n";
+         return true;
+        }
+
+        if(event == Event::Special({5})) //  CTRL + E
+        {
+          changeset.m_quit = true;
+          screen.ExitLoopClosure () ();
+          return true;
+        };
       return false;
     });
   }
@@ -88,6 +101,6 @@ UserInput::UserInput(Changeset &changeset, const std::string &filename, const st
   });
 
   auto screen                  = ScreenInteractive::TerminalOutput();
-  auto event                   = Private::create_event(screen, renderer);
+  auto event                   = Private::create_event(changeset, screen, renderer);
   screen.Loop(event);
 };
