@@ -21,12 +21,12 @@ Create a `build` directory and the script `build.sh` to compile.
 
         ./build.sh --build 
 
-will re-build make files.
+Re-builds make files. You should run this the first time you clone this project.
 
-        ./build.sh -- run 
+        ./build.sh --run 
 
-will compile and run the binary.
+Compile and run the binary.
 
         ./build.sh --release
 
-will compile and copy the binary to the root of the `Dropbox (Antfood, LLC)`.
+Compiles and copy the binary to the root of the `Dropbox (Antfood, LLC)`.
