@@ -81,11 +81,13 @@ UserInput::UserInput(Changeset &changeset, const std::string &filename, const st
 
   Component renderer = Renderer(project_container, [&] {
     return  vbox({
-               text(" " + filename) | color(Color::Blue),
+               bold(text(" " + filename)) | color(Color::White),
                text(" " + changeset.first_error()) | color(Color::Red),
                Private::render_more_errors (changeset),
                separator(),
-               text("  Found at -> " + path +  ". Press 'o' to open in Finder.") | color(Color::Cyan),
+               text(" 'CTRL + F' to show in Finder.") | color(Color::Blue),
+               text(" 'CTRL + E' to exit.") | color(Color::Blue),
+               text(" 'CTRL + S' to skip.") | color(Color::Blue),
                separator(),
                hbox(text(" Client:"), client_input->Render()  | color(Private::which_color (changeset, bad_client))),
                hbox(text(" Project: "), project_input->Render() | color(Private::which_color (changeset, bad_project)) ),
