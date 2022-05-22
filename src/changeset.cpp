@@ -30,7 +30,8 @@ Changeset::Changeset (std::vector<std::string> &&fields) :
     m_fields (fields),
     m_valid (true),
     m_quit(false),
-    m_was_cleared(false)
+    m_cleared(false),
+    m_skipped(false)
 {}
 
 
@@ -77,7 +78,7 @@ void Changeset::clear_errors ()
 {
   m_errors.clear();
   m_valid = true;
-  m_was_cleared = true;
+  m_cleared = true;
 }
 
 bool Changeset::was_bad_field_count ()

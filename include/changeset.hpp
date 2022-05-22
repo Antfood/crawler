@@ -32,8 +32,9 @@ struct Changeset
   std::vector<std::string>       m_fields;
   std::vector<ValidationError>   m_errors;
   bool                           m_valid;
-  bool                           m_was_cleared;
+  bool                           m_cleared;
   bool                           m_quit;
+  bool                           m_skipped;
 
   explicit Changeset(std::vector<std::string> &&fields);
   struct                  Private;

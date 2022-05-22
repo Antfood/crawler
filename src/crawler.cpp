@@ -8,14 +8,20 @@ struct Crawler::Private {
     Validator::validate_fields_count (changeset);
     Validator::validate_fields (changeset);
 
-    if(!changeset.m_valid && changeset.m_was_cleared)
-      Warning();
+    if(changeset.m_valid && changeset.m_cleared)
+      Warning("Success!", success);
+
+    if(!changeset.m_valid && changeset.m_cleared)
+      Warning("Invalid, Please Try Again.", error);
 
     if (!changeset.m_valid)
       {
         UserInput ui (changeset, current_dir);
 
-        if(changeset.m_quit)
+        if(changeset.m_skipped)
+           Warning("Skipped.", skipped);
+
+        if(changeset.m_quit || changeset.m_skipped)
            return;
 
         changeset.clear_errors ();
@@ -36,7 +42,10 @@ struct Crawler::Private {
         validate_changeset (changeset, current_dir.get_dirname ());
 
         if(changeset.m_quit)
-            exit(0);
+          {
+            Warning("Goodbye...", quit);
+            exit (0);
+          }
       }
   }
 };

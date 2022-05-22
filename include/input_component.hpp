@@ -12,10 +12,11 @@
 
  using namespace ftxui;
 
+ enum warning_type {error, success, skipped, quit};
+
 class UserInput
 {
   private:
-     
      std::string m_output;
      struct Private;
 
@@ -24,11 +25,11 @@ class UserInput
 
 };
 
-
 class Warning
 {
  public:
-    Warning();
+    Warning(const std::string &message, warning_type type);
+    static Color select_color(warning_type type);
 };
 
 

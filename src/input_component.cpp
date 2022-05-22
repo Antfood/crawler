@@ -1,12 +1,25 @@
 #include "../include/input_component.hpp"
 
-Warning::Warning()
+Warning::Warning(const std::string &message, warning_type type)
 {
- Element el = vbox({ text("    Invalid, Please try again.    ")}) | borderDouble | center;
-
+  std::cout << "\n";
+  Element el = vbox({ text("    " + message + "    ")}) | borderDouble | center | color(select_color(type));
   auto screen = Screen::Create(Dimension::Full(), Dimension::Fit(el));
   Render(screen, el);
   screen.Print();
+}
+
+Color Warning::select_color (warning_type type)
+{
+  switch(type)
+    {
+      case error:
+         return Color::Red;
+      case success:
+         return Color::Green;
+      default:
+        return Color::White;
+    };
 }
 
 struct UserInput::Private
@@ -23,8 +36,14 @@ struct UserInput::Private
 
         if(event == Event::Special({6})) // CTRL +  F
         {
-          std::cout << "ctrl + F!" << "\n";
          return true;
+        }
+
+      if(event == Event::Special({14})) //  CTRL + N
+        {
+          changeset.m_skipped = true;
+          screen.ExitLoopClosure () ();
+          return true;
         }
 
         if(event == Event::Special({5})) //  CTRL + E
@@ -52,6 +71,7 @@ struct UserInput::Private
 
 UserInput::UserInput (Changeset &changeset, const std::string &path)
 {
+  std::cout << "\n\n";
   changeset.fill_empty_fields ();
 
   Component client_input                = Input(&changeset.m_fields[client], "Missing Client Name");
@@ -86,7 +106,7 @@ UserInput::UserInput (Changeset &changeset, const std::string &path)
                separator(),
                text(" 'CTRL + F' to show in Finder.") | color(Color::Blue),
                text(" 'CTRL + E' to exit.") | color(Color::Blue),
-               text(" 'CTRL + S' to skip.") | color(Color::Blue),
+               text(" 'CTRL + N' to skip.") | color(Color::Blue),
                separator(),
                hbox(text(" Client:"), client_input->Render()  | color(Private::which_color (changeset, bad_client))),
                hbox(text(" Project: "), project_input->Render() | color(Private::which_color (changeset, bad_project)) ),
