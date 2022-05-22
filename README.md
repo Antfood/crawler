@@ -18,7 +18,7 @@ app is in your Desktop
 
 ## Build
 
-Use the script `build.sh` to build and compile.
+You must have `Cmake` to build this project. Use the script `build.sh` to build and compile.
 
         ./build.sh --build 
 
