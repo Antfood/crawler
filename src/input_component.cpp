@@ -1,5 +1,6 @@
 #include "../include/input_component.hpp"
 
+
 Warning::Warning(const std::string &message, warning_type type)
 {
   std::cout << "\n";
@@ -24,7 +25,7 @@ Color Warning::select_color (warning_type type)
 
 struct UserInput::Private
 {
-  static Component create_event (Changeset &changeset, ScreenInteractive &screen, Component &renderer)
+  static Component create_event (Changeset &changeset, const std::string &path, ScreenInteractive &screen, const Component &renderer)
   {
     return CatchEvent (renderer, [&] (Event const &event)
     {
@@ -36,6 +37,10 @@ struct UserInput::Private
 
         if(event == Event::Special({6})) // CTRL +  F
         {
+          std::string cmd = "open \"";
+          cmd += path;
+          cmd += "\"";
+          std::system(cmd.c_str());
          return true;
         }
 
@@ -71,7 +76,6 @@ struct UserInput::Private
 
 UserInput::UserInput (Changeset &changeset, const std::string &path)
 {
-  std::cout << "\n\n";
   changeset.fill_empty_fields ();
 
   Component client_input                = Input(&changeset.m_fields[client], "Missing Client Name");
@@ -104,7 +108,7 @@ UserInput::UserInput (Changeset &changeset, const std::string &path)
                text(" " + changeset.first_error()) | color(Color::Red),
                Private::render_more_errors (changeset),
                separator(),
-               text(" 'CTRL + F' to show in Finder.") | color(Color::Blue),
+               text(" 'CTRL + F' to reveal in Finder.") | color(Color::Blue),
                text(" 'CTRL + E' to exit.") | color(Color::Blue),
                text(" 'CTRL + N' to skip.") | color(Color::Blue),
                separator(),
@@ -121,7 +125,7 @@ UserInput::UserInput (Changeset &changeset, const std::string &path)
            }) | border;
   });
 
-  auto screen                  = ScreenInteractive::TerminalOutput();
-  auto event                   = Private::create_event(changeset, screen, renderer);
+  auto screen            = ScreenInteractive::TerminalOutput();
+  auto event                   = Private::create_event(changeset, path, screen, renderer);
   screen.Loop(event);
 };

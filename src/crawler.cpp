@@ -39,7 +39,7 @@ struct Crawler::Private {
           continue;
 
         Changeset changeset = self.m_validator.split (file);
-        validate_changeset (changeset, current_dir.get_dirname ());
+        validate_changeset (changeset, current_dir.get_path ());
 
         if(changeset.m_quit)
           {
