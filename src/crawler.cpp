@@ -72,7 +72,7 @@ Crawler::Crawler () :
     m_rootdir (find_root_dir ())
 {}
 
-void Crawler::read_directory_tree ()
+void Crawler::run ()
 {
   try
  {
@@ -90,8 +90,13 @@ Directory Crawler::find_root_dir ()
 
   for (auto &subdir : home_dir.get_subdirectories ())
     if (std::regex_search (subdir.c_str (), std::regex ("dropbox*", std::regex_constants::icase)))
-      return Directory (subdir.c_str ());
-  return home_dir;
+   {
+     Warning("Welcome! Scanning your for library files...", welcome);
+     return Directory (subdir.c_str ());
+   }
+
+  Warning("Did not find the Dropbox Directory in your computer. Exiting...", error);
+  exit(1);
 }
 
 void Crawler::read_directory_tree (Directory &current_dir)

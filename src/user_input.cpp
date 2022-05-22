@@ -45,7 +45,7 @@ struct UserInput::Private
    static Element render_more_errors(Changeset &changeset)
    {
      if (changeset.m_errors.size() > 1)
-       return text("More errors: -> " + changeset.other_errors()) | color(Color::Red);
+       return text("Next errors: -> " + changeset.other_errors()) | color(Color::Red);
      else
        return text("");
    };

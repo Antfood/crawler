@@ -11,7 +11,7 @@
 
 using namespace ftxui;
 
-enum warning_type {error, success, skipped, quit};
+enum warning_type {error, success, skipped, quit, welcome};
 
 class Warning
 {

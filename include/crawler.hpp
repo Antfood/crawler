@@ -14,7 +14,7 @@ class Crawler
 
  public:
     Crawler();
-    void read_directory_tree();
+    void run();
     void read_directory_tree(Directory &current_dir);
     static Directory find_root_dir();
 

@@ -18,8 +18,7 @@ int main()
 {
  // test();
   Crawler crawler;
-  crawler.read_directory_tree();
-
+  crawler.run ();
 
   return 0;
 }

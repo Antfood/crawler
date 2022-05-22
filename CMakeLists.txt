@@ -25,7 +25,9 @@ endif()
 project(crawler LANGUAGES CXX VERSION 0.1)
 
 file(GLOB_RECURSE SRC_FILES src/*.cpp)
+
 add_executable(crawler ${SRC_FILES})
+
 target_include_directories(crawler PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_include_directories(crawler PRIVATE src)
