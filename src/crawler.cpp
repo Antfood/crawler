@@ -119,17 +119,6 @@ Directory Crawler::find_root_dir ()
         return Directory (subdir.c_str ());
       }
 
-  Directory volume_dir ("/Volumes");
-
-  for (auto &subdir : volume_dir.get_subdirectories ())
-    {
-      if (std::regex_search (subdir.c_str (), std::regex ("dropbox*", std::regex_constants::icase)))
-        {
-          Warning ("Welcome! Scanning for library audio files...", welcome);
-          return Directory (subdir.c_str ());
-        }
-    }
-
     /* if dropbox is not found in home scan /Volume */
     return Private::find_dropbox_directory();
 }
