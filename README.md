@@ -11,8 +11,51 @@ Crawler runs on OSX only.
 ## Dropbox
 
 The program specifically targets Antfood's dropbox. So in order to run it you must have dropbox synced to your computer.
-Failing to find a `Dropbox (Antfood, LLC)` directory in your home directory, crawler will quit immediately while
+
+Crawler will first look at your home directory (`/Users/${USER}`) for the Dropbox folder. Failing at that, it will then scan the drives in `/Volumes`. It will go as far as
+the root of external hardrives so if the Dropbox folder is deeply nested in that filesystem crawler will fail the search.
+
+If a`Dropbox (Antfood, LLC)` directory is not found, crawler will quit immediately while
 warning the user.
+
+## Format
+
+Crawler will validate the following fields
+
+    Client_Project_RecordingName_Descriptor_Key_Date_BPM_T-S_ComposerIntitials_Talent(Instrument).wav
+
+- `Client`, `Project`, `RecordingName`, `Descriptor`: Letters and numbers only. Word separated in CamelCase.
+
+        JohnsonJohnson
+        AutomatedSearch
+        Web20
+        Marimbondo  
+        Original
+
+- `Date`: Numbers only in the following format: `YYMMDD`.
+- `BPM`: Numbers with 1 to 3 digits only. `5`, `12`, `120`.
+- `T-S`: Time signature. Two sets of 1 to 2 digits separated by a `-`.  `4-4`, `12-8`.
+- `ComposerInitials`: Between 1 and 3 capitalized letters only. Multiple composer initials are separated by a `-`.
+
+        PB
+        WB-CVV
+        YE-DH-LS
+- `Talent(Instrument)`: Only Letters and `()` allowed. Composers or arrangers name in CamelCase followed by the instrument within parenthesis. 
+This field must be marked with `NXT` if empty. Multiple talents or arrangers also possible.
+
+        WilsonBrown(Guitar)
+        ViniNunes(Arranger)
+        WillBone(Trombone)AmandaPlantin(Vocals)
+        WillBone(Trombone)AmandaPlantin(Vocals)ViniNunes(Arranger)
+        NXT
+
+
+### Examples:
+
+    EITSwiss_BadKitty_Cattitude_Original_220222_E_98_4-4_JH_NXT
+    Intersport_SS22_RisingUp_Orignal_211120_Dm_101_4-4_PB_CharleyVanVeldhoven(Piano).wav
+    Adidas_StayInPlay_3AM_Remix_211104_Cm_125_4-4_DH_PedroBotsaris(Arranger)EsperanzaDenswil(Vocals)
+    WeTransfer_WTO2O_Wavvy_RevisedVersion_220114_110_D_4-4_DH-RW_NXT.wav
 
 ## Usage
 You can launch the app by double-clicking on its icon on a finder window. This will prompt a terminal
