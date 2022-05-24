@@ -42,7 +42,21 @@ struct UserInput::Private
     return changeset.has_error (err) ? Color::Red : Color::White;
    }
 
-   static Element render_more_errors(Changeset &changeset)
+   static Element render_fields_info(Changeset &changeset)
+   {
+    if(!changeset.has_error (bad_field_count))
+      return text("");
+
+     return vbox({
+                     text(""),
+                     text (" Client_Project_RecordingName_Descriptor_Key_Date_BPM_T-S_ComposerIntitials_Talent(Instrument).wav") | bold,
+                     text ( "   1       2          3          4        5   6    7   8          9               10") | color(Color::Blue)
+                 }
+     );
+
+   };
+
+  static Element render_next_errors(Changeset &changeset)
    {
      if (changeset.m_errors.size() > 1)
        return text("Next errors -> " + changeset.other_errors()) | color(Color::Red);
@@ -85,7 +99,8 @@ UserInput::UserInput (Changeset &changeset, const std::string &path)
     return  vbox({
                bold(text(" " + changeset.build_path())) | color(Color::White),
                text(" " + changeset.first_error()) | color(Color::Red),
-               Private::render_more_errors (changeset),
+               Private::render_fields_info(changeset),
+               Private::render_next_errors (changeset),
                separator(),
                text(" 'CTRL + F' to reveal in Finder.") | color(Color::Blue),
                text(" 'CTRL + E' to exit.") | color(Color::Blue),

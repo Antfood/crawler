@@ -5,11 +5,12 @@ struct Changeset::Private{
   static std::string error_to_string(Changeset &self, int pos)
   {
     error_type err = self.m_errors.at (pos).first;
+   int count = self.m_errors.at (pos).second;
 
     switch (err)
       {
         case bad_delimiter:return {"Bad Delimiter"};
-        case bad_field_count:return {"Bad Field count"};
+        case bad_field_count:return {"\nBad Field count. Must have " + std::to_string(FIELD_COUNT - 1) + " fields but found only " + std::to_string(count - 1) + "." };
         case bad_client:return {"Bad Client Name"};
         case bad_project:return {"Bad Project Name"};
         case bad_name:return {"Bad Recording Name"};
@@ -37,6 +38,10 @@ Changeset::Changeset (std::vector<std::string> &&fields) :
 
 std::string Changeset::first_error ()
 {
+
+  if(has_error (bad_field_count))
+      return Private::error_to_string (*this, 0);
+
   size_t size = m_errors.at (0).second + 2;
 
   char buffer[size];

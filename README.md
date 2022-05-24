@@ -24,7 +24,7 @@ Crawler will validate the following fields
 
     Client_Project_RecordingName_Descriptor_Key_Date_BPM_T-S_ComposerIntitials_Talent(Instrument).wav
 
-- `Client`, `Project`, `RecordingName`, `Descriptor`: Letters and numbers only. Word separated in CamelCase.
+- `Client`, `Project`, `RecordingName`, `Descriptor`: Letters and numbers only. Words separated in CamelCase.
 
         JohnsonJohnson
         AutomatedSearch
@@ -32,7 +32,7 @@ Crawler will validate the following fields
         Marimbondo  
         Original
 
-- `Date`: Numbers only in the following format: `YYMMDD`.
+- `Date`: Numbers only in the following format `YYMMDD`.
 - `BPM`: Numbers with 1 to 3 digits only. `5`, `12`, `120`.
 - `T-S`: Time signature. Two sets of 1 to 2 digits separated by a `-`.  `4-4`, `12-8`.
 - `ComposerInitials`: Between 1 and 3 capitalized letters only. Multiple composer initials are separated by a `-`.
@@ -49,12 +49,13 @@ This field must be marked with `NXT` if empty. Multiple talents or arrangers als
         WillBone(Trombone)AmandaPlantin(Vocals)ViniNunes(Arranger)
         NXT
 
+The extension must be `.wav`.
 
 ### Examples:
 
     EITSwiss_BadKitty_Cattitude_Original_220222_E_98_4-4_JH_NXT
     Intersport_SS22_RisingUp_Orignal_211120_Dm_101_4-4_PB_CharleyVanVeldhoven(Piano).wav
-    Adidas_StayInPlay_3AM_Remix_211104_Cm_125_4-4_DH_PedroBotsaris(Arranger)EsperanzaDenswil(Vocals)
+    Adidas_StayInPlay_3AM_Remix_211104_Cm_125_4-4_DH_PedroBotsaris(Arranger)EsperanzaDenswil(Vocals).wav
     WeTransfer_WTO2O_Wavvy_RevisedVersion_220114_110_D_4-4_DH-RW_NXT.wav
 
 ## Usage
