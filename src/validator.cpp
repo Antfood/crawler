@@ -32,12 +32,12 @@ struct Validator::Private {
 
   static bool is_not_valid_ts (const std::string &ts)
   {
-    return !std::regex_search (ts, std::regex ("^\\d{1,2}-\\d{1,2}$"));
+    return !std::regex_search (ts, std::regex ("^\\d{1,2}-\\d{1,2}$|^multiple"));
   };
 
   static bool is_not_valid_composer (const std::string &composer)
   {
-    return !std::regex_search (composer, std::regex ("^[a-zA-Z]{2,3}$"));
+    return !std::regex_search (composer, std::regex ("^[A-Z]{2,3}$|^([A-Z]{2,3}-?)+$"));
   };
 
   static bool is_not_valid_extension (const std::string &extension)
@@ -45,6 +45,10 @@ struct Validator::Private {
     return !std::regex_search (extension, std::regex ("^.wav$"));
   };
 
+  [[maybe_unused]] static bool is_not_valid_talent(const std::string &talent)
+  {
+    return !std::regex_search(talent, std::regex(R"(^NXT|(?:\w+\(\w+\))+)"));
+  }
 };
 
 Validator::Validator (std::string delimiter) :
@@ -137,7 +141,7 @@ void Validator::validate_fields (Changeset &changeset)
       if (field_index == composer && Private::is_not_valid_composer (field))
         changeset.invalidate (bad_composer, pos);
 
-      if (field_index == external_talent && Private::is_not_valid_name (field))
+      if (field_index == external_talent && Private::is_not_valid_talent (field))
         changeset.invalidate (bad_external_talent, pos);
 
       if (field_index == ext && Private::is_not_valid_extension (field))
