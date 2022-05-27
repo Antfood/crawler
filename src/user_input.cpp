@@ -49,8 +49,7 @@ struct UserInput::Private
 
      return vbox({
                      text(""),
-                     text (" Client_Project_RecordingName_Descriptor_Key_Date_BPM_T-S_ComposerIntitials_Talent(Instrument).wav") | bold,
-                     text ( "   1       2          3          4        5   6    7   8          9               10") | color(Color::Blue)
+                     text (" Crawler will attempt to match existing values with the correct fields for you. Please revise below."),
                  }
      );
 
@@ -59,7 +58,7 @@ struct UserInput::Private
   static Element render_next_errors(Changeset &changeset)
    {
      if (changeset.m_errors.size() > 1)
-       return text("Next errors -> " + changeset.other_errors()) | color(Color::Red);
+       return text(" Next errors -> " + changeset.other_errors()) | color(Color::Red);
      else
        return text("");
    };
@@ -69,11 +68,10 @@ UserInput::UserInput (Changeset &changeset, const std::string &path)
 {
 
   std::cout << "\n\n";
-  changeset.fill_empty_fields ();
 
   Component client_input                = Input(&changeset.m_fields[client], "Missing Client Name");
   Component project_input               = Input(&changeset.m_fields[project], "Missing Project Name");
-  Component recording_name_input        = Input(&changeset.m_fields[name], "Missing Recording Name");
+  Component recording_name_input        = Input(&changeset.m_fields[recording], "Missing Recording Name");
   Component recording_descriptor_input  = Input(&changeset.m_fields[descriptor], "Missing Descriptor Name");
   Component date_input                  = Input(&changeset.m_fields[date], "Missing Date");
   Component key_input                   = Input(&changeset.m_fields[key], "Missing Key");

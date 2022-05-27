@@ -1,5 +1,17 @@
 #include "../include/validator.hpp"
 
+const std::array<std::regex, REGEX_COUNT> REGEXES = {
+    std::regex ("^[a-zA-Z1-9]+$"),                  /* client, project, composition*/
+    std::regex ("^[a-zA-Z]{4,}$"),                  /*  descriptor minimum of 4 letters */
+    std::regex ("^\\d{6}$"),                        /* date */
+    std::regex ("^[CDEFGAB](?:m||modal)"),             /* key  */
+    std::regex ("^\\d{2,3}$"),                      /* bpm  */
+    std::regex ("^\\d{1,2}-\\d{1,2}$|^multiple"),   /* time signature */
+    std::regex ("^[A-Z]{2,3}$|^([A-Z]{2,3}-?)+$"),  /* composer  */
+    std::regex (R"(^NXT|(?:\w+\(\w+\))+)"),          /* talent  */
+    std::regex ("^.wav$")
+};
+
 struct Validator::Private {
  public:
   static void split_extension (Validator &self, const std::string &filename, std::vector<std::string> &output)
@@ -10,49 +22,162 @@ struct Validator::Private {
     output.push_back (filename.substr (self.m_cursor, filename.length ()));
   };
 
-  static bool is_not_valid_name (const std::string &name)
+  static bool is_valid_name (const std::string &name)
   {
-    return !std::regex_search (name, std::regex ("^[a-zA-Z1-9]+$"));
+    return std::regex_search (name, REGEXES.at (name_regex));
   };
 
-  static bool is_not_valid_date (const std::string &date)
+  static bool is_valid_descriptor (const std::string &descriptor)
   {
-    return !std::regex_search (date, std::regex ("^\\d{6}$"));
+    return std::regex_search (descriptor, REGEXES.at (descriptor_regex));
   };
 
-  static bool is_not_valid_bpm (const std::string &bpm)
+  static bool is_valid_date (const std::string &date)
   {
-    return !std::regex_search (bpm, std::regex ("^\\d{2,3}$"));
+    return std::regex_search (date, REGEXES.at (date_regex));
   };
 
-  static bool is_not_valid_key (const std::string &key)
+  static bool is_valid_bpm (const std::string &bpm)
   {
-    return !std::regex_search (key, std::regex ("^[CDEFGAB](?:m||modal)"));
+    return std::regex_search (bpm, REGEXES.at (bpm_regex));
   };
 
-  static bool is_not_valid_ts (const std::string &ts)
+  static bool is_valid_key (const std::string &key)
   {
-    return !std::regex_search (ts, std::regex ("^\\d{1,2}-\\d{1,2}$|^multiple"));
+    return std::regex_search (key, REGEXES[key_regex]);
   };
 
-  static bool is_not_valid_composer (const std::string &composer)
+  static bool is_valid_ts (const std::string &ts)
   {
-    return !std::regex_search (composer, std::regex ("^[A-Z]{2,3}$|^([A-Z]{2,3}-?)+$"));
+    return std::regex_search (ts, REGEXES[ts_regex]);
   };
 
-  static bool is_not_valid_extension (const std::string &extension)
+  static bool is_valid_composer (const std::string &composer)
   {
-    return !std::regex_search (extension, std::regex ("^.wav$"));
+    return std::regex_search (composer, REGEXES.at (composer_regex));
   };
 
-  [[maybe_unused]] static bool is_not_valid_talent(const std::string &talent)
+  static bool is_valid_talent (const std::string &talent)
   {
-    return !std::regex_search(talent, std::regex(R"(^NXT|(?:\w+\(\w+\))+)"));
+    return std::regex_search (talent, REGEXES.at (talent_regex));
   }
+
+  static bool is_valid_extension (const std::string &extension)
+  {
+    return std::regex_search (extension, REGEXES.at (ext_regex));
+  };
+
+  static std::vector<std::string> create_new_fields (Changeset &changeset)
+  {
+    std::vector<std::string> new_fields;
+    int field_index = 0;
+    int pos = 0;
+
+    for (auto &field : changeset.m_fields)
+      {
+        if (field_index == client)
+          {
+            if (Private::is_valid_name (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_client, pos);
+          }
+        if (field_index == project)
+          {
+            if (Private::is_valid_name (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_project, pos);
+          }
+        if (field_index == recording)
+          {
+            if (Private::is_valid_name (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_descriptor, pos);
+          }
+        if (field_index == descriptor)
+          {
+            if (Private::is_valid_descriptor (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_descriptor, pos);
+          }
+        if (field_index == date)
+          {
+            if (Private::is_valid_date (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_date, pos);
+          }
+        if (field_index == key)
+          {
+            if (Private::is_valid_key (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_key, pos);
+          }
+        if (field_index == bpm)
+          {
+            if (Private::is_valid_bpm (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_bpm, pos);
+          }
+        if (field_index == ts)
+          {
+            if (Private::is_valid_ts (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_ts, pos);
+          }
+        if (field_index == composer)
+          {
+            if (Private::is_valid_composer (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_composer, pos);
+          }
+        if (field_index == external_talent)
+          {
+            if (Private::is_valid_talent (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_external_talent, pos);
+          }
+        if (field_index == ext)
+          {
+            if (Private::is_valid_extension (field))
+              new_fields.emplace_back (field);
+            else
+              changeset.invalidate (bad_extension, pos);
+          }
+
+        field_index++;
+        pos += static_cast<int>(field.length ()) + 1; /* +1 to count delim */
+      }
+
+    return new_fields;
+  }
+
+  static int
+  find_suitable_field (const Changeset &changeset, const std::vector<std::string> &new_fields, regex_type rtype)
+  {
+    for(int index = FIELD_COUNT - 1; index >= 0; index--)
+      {
+        bool is_used = (std::find (new_fields.begin (), new_fields.end (), changeset.m_fields.at(index)) != new_fields.end ());
+
+        if (std::regex_search (changeset.m_fields.at(index), REGEXES.at (rtype)) && !is_used ) // check if field is already being used
+          return index;
+      }
+
+    return -1;
+  }
+
 };
 
 Validator::Validator (std::string delimiter) :
-    m_delimiter (std::move(delimiter)),
+    m_delimiter (std::move (delimiter)),
     m_cursor (0)
 {}
 
@@ -76,7 +201,41 @@ Changeset Validator::split (const std::string &filename)
 
     }
 
-  return Changeset(std::move (output));
+  return Changeset (std::move (output));
+}
+
+void Validator::fix_fields_index (Changeset &changeset)
+{
+  if (!changeset.error_is_bad_field_count ()) /* fix only on bad field count */
+    return;
+
+  std::vector<std::string> new_fields = Private::create_new_fields (changeset);
+  Changeset::fill_fields (new_fields);
+
+  int index = 0;
+  std::vector<error_type> errs_to_clear;
+
+  for (auto &err : changeset.m_errors)
+    {
+      if (err.first < 2)
+          continue;
+
+      regex_type rtype =
+          err.first <= bad_name ? name_regex : static_cast<regex_type>(err.first - REGEX_FIELD_ERR_FIELD_OFFSET);
+      auto field_index = Private::find_suitable_field (changeset, new_fields, rtype);
+
+      if (field_index > 0)
+        {
+          new_fields[err.first - TYPE_FIELD_ERR_FIELD_OFFSET] = changeset.m_fields.at (field_index);
+          errs_to_clear.emplace_back (err.first);
+        }
+    }
+
+    for(auto &err : errs_to_clear)
+       changeset.clear_error (err);
+
+
+  changeset.m_fields = new_fields;
 }
 
 void Validator::validate_delimiter (Changeset &changeset)
@@ -114,37 +273,37 @@ void Validator::validate_fields (Changeset &changeset)
 
   for (auto &field : changeset.m_fields)
     {
-      if (field_index == client && Private::is_not_valid_name (field))
+      if (field_index == client && !Private::is_valid_name (field))
         changeset.invalidate (bad_client, pos);
 
-      if (field_index == project && Private::is_not_valid_name (field))
+      if (field_index == project && !Private::is_valid_name (field))
         changeset.invalidate (bad_project, pos);
 
-      if (field_index == name && Private::is_not_valid_name (field))
+      if (field_index == recording && !Private::is_valid_name (field))
         changeset.invalidate (bad_name, pos);
 
-      if (field_index == descriptor && Private::is_not_valid_name (field))
+      if (field_index == descriptor && !Private::is_valid_descriptor (field))
         changeset.invalidate (bad_descriptor, pos);
 
-      if (field_index == date && Private::is_not_valid_date (field))
+      if (field_index == date && !Private::is_valid_date (field))
         changeset.invalidate (bad_date, pos);
 
-      if (field_index == key && Private::is_not_valid_key (field))
+      if (field_index == key && !Private::is_valid_key (field))
         changeset.invalidate (bad_key, pos);
 
-      if (field_index == bpm && Private::is_not_valid_bpm (field))
+      if (field_index == bpm && !Private::is_valid_bpm (field))
         changeset.invalidate (bad_bpm, pos);
 
-      if (field_index == ts && Private::is_not_valid_ts (field))
+      if (field_index == ts && !Private::is_valid_ts (field))
         changeset.invalidate (bad_ts, pos);
 
-      if (field_index == composer && Private::is_not_valid_composer (field))
+      if (field_index == composer && !Private::is_valid_composer (field))
         changeset.invalidate (bad_composer, pos);
 
-      if (field_index == external_talent && Private::is_not_valid_talent (field))
+      if (field_index == external_talent && !Private::is_valid_talent (field))
         changeset.invalidate (bad_external_talent, pos);
 
-      if (field_index == ext && Private::is_not_valid_extension (field))
+      if (field_index == ext && !Private::is_valid_extension (field))
         changeset.invalidate (bad_extension, pos);
 
       pos += static_cast<int>(field.length ()) + 1; /* +1 to count delim */

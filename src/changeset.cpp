@@ -86,30 +86,46 @@ void Changeset::clear_errors ()
   m_cleared = true;
 }
 
-bool Changeset::was_bad_field_count ()
+void Changeset::clear_error(error_type err)
 {
-  return m_errors.at(0).first == bad_field_count;
+  auto itr = std::find_if(m_errors.begin(), m_errors.end(),[&err](const ValidationError & element){ return element.first == err;} );
+
+  if(itr != m_errors.cend())
+    {
+      auto err_index = std::distance (m_errors.begin (), itr);
+      m_errors.erase (std::next (m_errors.begin (), err_index));
+    }
+}
+
+bool Changeset::error_is_bad_field_count ()
+{
+  return !m_valid && m_errors.at(0).first == bad_field_count;
 }
 
 void Changeset::fill_empty_fields ()
 {
-  size_t fields_length = m_fields.size();
+  Changeset::fill_fields (m_fields);
+}
+
+void Changeset::fill_fields (std::vector<std::string> &fields)
+{
+  size_t fields_length = fields.size();
 
   if(fields_length == FIELD_COUNT)
     return;
 
-  auto last_field = m_fields.at(fields_length - 1);
+  auto last_field = fields.at(fields_length - 1);
   bool is_extension = std::regex_search(last_field, std::regex("^.[a-zA-Z]{2,3}"));
 
   if(is_extension)
-    m_fields.pop_back();
+    fields.pop_back();
 
   while (fields_length <= FIELD_COUNT)
     {
       if (is_extension && fields_length == FIELD_COUNT)
-        m_fields.emplace_back (last_field); /* fill fields with empty strings */
+        fields.emplace_back (last_field); /* fill fields with empty strings */
       else
-        m_fields.emplace_back (std::string ("?")); /* fill fields with empty strings */
+        fields.emplace_back (std::string ("?")); /* fill fields with empty strings */
 
       fields_length++;
     }

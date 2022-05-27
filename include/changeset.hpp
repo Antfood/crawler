@@ -3,9 +3,11 @@
 #include <vector>
 #include <string>
 #include <regex>
+#include <array>
 
 #define DELIM "_"
 #define FIELD_COUNT 11  /* 10 fields + extension */
+#define ERROR_TYPE_FIELD_TYPE_OFFSET 2
 
 enum error_type
 {
@@ -24,7 +26,7 @@ enum error_type
   bad_extension       = 12
 };
 
-using ValidationError = std::pair<const error_type, const size_t>;
+using ValidationError = std::pair <error_type, size_t>;
 
 struct Changeset
 {
@@ -44,8 +46,11 @@ struct Changeset
   void                    invalidate(error_type err, int pos);
   bool                    has_error(error_type err);
   void                    clear_errors();
-  bool                    was_bad_field_count();
+  void                    clear_error(error_type err);
   std::string             build_path();
+  bool                    error_is_bad_field_count();
+
+  static void            fill_fields(std::vector<std::string> &fields);
 };
 
 #endif
