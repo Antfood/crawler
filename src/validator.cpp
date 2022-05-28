@@ -1,14 +1,14 @@
 #include "../include/validator.hpp"
 
 const std::array<std::regex, REGEX_COUNT> REGEXES = {
-    std::regex ("^[a-zA-Z1-9]+$"),                  /* client, project, composition*/
-    std::regex ("^[a-zA-Z]{4,}$"),                  /*  descriptor minimum of 4 letters */
-    std::regex ("^\\d{6}$"),                        /* date */
-    std::regex ("^[CDEFGAB](?:m||modal)"),             /* key  */
-    std::regex ("^\\d{2,3}$"),                      /* bpm  */
-    std::regex ("^\\d{1,2}-\\d{1,2}$|^multiple"),   /* time signature */
-    std::regex ("^[A-Z]{2,3}$|^([A-Z]{2,3}-?)+$"),  /* composer  */
-    std::regex (R"(^NXT|(?:\w+\(\w+\))+)"),          /* talent  */
+    std::regex ("^[a-zA-Z1-9]+$"),                            /* client, project, composition*/
+    std::regex ("^[a-zA-Z]{4,}$"),                            /*  descriptor minimum of 4 letters */
+    std::regex ("^\\d{6}$"),                                  /* date */
+    std::regex ("^[CDEFGAB](?:#||b)(?:m||modal)$"),           /* key  */
+    std::regex ("^\\d{2,3}$"),                                /* bpm  */
+    std::regex ("^\\d{1,2}-\\d{1,2}$|^multiple"),             /* time signature */
+    std::regex ("^(?!NXT)[A-Z]{2,3}((-[A-Z]{2,3})?)+$"),      /* composer - ignores NXT  */
+    std::regex (R"(^NXT|(?:\w+\(\w+\))+)"),                   /* talent  */
     std::regex ("^.wav$")
 };
 
@@ -69,7 +69,7 @@ struct Validator::Private {
 
   static std::vector<std::string> create_new_fields (Changeset &changeset)
   {
-    std::vector<std::string> new_fields;
+    std::vector<std::string> new_fields = {"?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?"};
     int field_index = 0;
     int pos = 0;
 
@@ -78,77 +78,77 @@ struct Validator::Private {
         if (field_index == client)
           {
             if (Private::is_valid_name (field))
-              new_fields.emplace_back (field);
+              new_fields[client] = field;
             else
               changeset.invalidate (bad_client, pos);
           }
         if (field_index == project)
           {
             if (Private::is_valid_name (field))
-              new_fields.emplace_back (field);
+              new_fields[project] = field;
             else
               changeset.invalidate (bad_project, pos);
           }
         if (field_index == recording)
           {
             if (Private::is_valid_name (field))
-              new_fields.emplace_back (field);
+              new_fields[recording] = field;
             else
               changeset.invalidate (bad_descriptor, pos);
           }
         if (field_index == descriptor)
           {
             if (Private::is_valid_descriptor (field))
-              new_fields.emplace_back (field);
+              new_fields[descriptor] = field;
             else
               changeset.invalidate (bad_descriptor, pos);
           }
         if (field_index == date)
           {
             if (Private::is_valid_date (field))
-              new_fields.emplace_back (field);
+              new_fields[date] = field;
             else
               changeset.invalidate (bad_date, pos);
           }
         if (field_index == key)
           {
             if (Private::is_valid_key (field))
-              new_fields.emplace_back (field);
+              new_fields[key] = field;
             else
               changeset.invalidate (bad_key, pos);
           }
         if (field_index == bpm)
           {
             if (Private::is_valid_bpm (field))
-              new_fields.emplace_back (field);
+              new_fields[bpm] = field;
             else
               changeset.invalidate (bad_bpm, pos);
           }
         if (field_index == ts)
           {
             if (Private::is_valid_ts (field))
-              new_fields.emplace_back (field);
+              new_fields[ts] = field;
             else
               changeset.invalidate (bad_ts, pos);
           }
         if (field_index == composer)
           {
             if (Private::is_valid_composer (field))
-              new_fields.emplace_back (field);
+              new_fields[composer] = field;
             else
               changeset.invalidate (bad_composer, pos);
           }
         if (field_index == external_talent)
           {
             if (Private::is_valid_talent (field))
-              new_fields.emplace_back (field);
+              new_fields[external_talent] = field;
             else
               changeset.invalidate (bad_external_talent, pos);
           }
         if (field_index == ext)
           {
             if (Private::is_valid_extension (field))
-              new_fields.emplace_back (field);
+              new_fields[ext] = field;
             else
               changeset.invalidate (bad_extension, pos);
           }
@@ -172,6 +172,32 @@ struct Validator::Private {
       }
 
     return -1;
+  }
+
+  static void redistribute_fields_and_clear_errors(Changeset &changeset, std::vector<std::string> &new_fields)
+  {
+
+    int index = 0;
+    std::vector<error_type> errs_to_clear;
+
+    for (auto &err : changeset.m_errors)
+      {
+        if (err.first < 2)
+          continue;
+
+        regex_type rtype =
+            err.first <= bad_name ? name_regex : static_cast<regex_type>(err.first - REGEX_FIELD_ERR_FIELD_OFFSET);
+        auto field_index = Private::find_suitable_field (changeset, new_fields, rtype);
+
+        if (field_index > 0)
+          {
+            new_fields[err.first - TYPE_FIELD_ERR_FIELD_OFFSET] = changeset.m_fields.at (field_index);
+            errs_to_clear.emplace_back (err.first);
+          }
+      }
+
+    for(auto &err : errs_to_clear)
+      changeset.clear_error (err);
   }
 
 };
@@ -204,36 +230,14 @@ Changeset Validator::split (const std::string &filename)
   return Changeset (std::move (output));
 }
 
-void Validator::fix_fields_index (Changeset &changeset)
+void Validator::fix_bad_fields_count (Changeset &changeset)
 {
   if (!changeset.error_is_bad_field_count ()) /* fix only on bad field count */
     return;
 
   std::vector<std::string> new_fields = Private::create_new_fields (changeset);
   Changeset::fill_fields (new_fields);
-
-  int index = 0;
-  std::vector<error_type> errs_to_clear;
-
-  for (auto &err : changeset.m_errors)
-    {
-      if (err.first < 2)
-          continue;
-
-      regex_type rtype =
-          err.first <= bad_name ? name_regex : static_cast<regex_type>(err.first - REGEX_FIELD_ERR_FIELD_OFFSET);
-      auto field_index = Private::find_suitable_field (changeset, new_fields, rtype);
-
-      if (field_index > 0)
-        {
-          new_fields[err.first - TYPE_FIELD_ERR_FIELD_OFFSET] = changeset.m_fields.at (field_index);
-          errs_to_clear.emplace_back (err.first);
-        }
-    }
-
-    for(auto &err : errs_to_clear)
-       changeset.clear_error (err);
-
+  Private::redistribute_fields_and_clear_errors (changeset, new_fields);
 
   changeset.m_fields = new_fields;
 }

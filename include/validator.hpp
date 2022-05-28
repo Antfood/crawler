@@ -54,7 +54,7 @@ class Validator
   static void                validate_fields(Changeset &changeset);
   static void                validate_delimiter(Changeset &changeset);
   static void                validate_fields_count(Changeset &changeset);
-  static void                fix_fields_index(Changeset &changeset);
+  static void                fix_bad_fields_count(Changeset &changeset);
 };
 
 #endif

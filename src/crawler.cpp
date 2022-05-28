@@ -27,7 +27,7 @@ struct Crawler::Private {
     Validator::validate_fields_count (changeset);
     Validator::validate_fields (changeset);
     changeset.fill_empty_fields ();
-    Validator::fix_fields_index (changeset);
+    Validator::fix_bad_fields_count (changeset);
 
 
     if (changeset.m_valid && changeset.m_cleared)
