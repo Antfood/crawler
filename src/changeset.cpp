@@ -8,31 +8,31 @@ struct Changeset::Private{
    int count = self.m_errors.at (pos).second;
 
     switch (err)
-      {
-        case bad_delimiter:return {"Bad Delimiter"};
-        case bad_field_count:return {"\nBad Field count. Must have " + std::to_string(FIELD_COUNT - 1) + " fields but found only " + std::to_string(count - 1) + "." };
-        case bad_client:return {"Bad Client Name"};
-        case bad_project:return {"Bad Project Name"};
-        case bad_name:return {"Bad Recording Name"};
-        case bad_descriptor:return {"Bad Recording Descriptor Name"};
-        case bad_date:return {"Bad Date"};
-        case bad_key:return {"Bad Key"};
-        case bad_bpm:return {"Bad BPM"};
-        case bad_ts:return {"Bad Time Signature"};
-        case bad_composer:return {"Bad Composer Name"};
-        case bad_external_talent:return {"Bad External Talent"};
-        case bad_extension:return {"Bad Extension"};
-      }
+    {
+      case bad_delimiter:return {"Bad Delimiter"};
+      case bad_field_count:return {"\nBad Field count. Must have " + std::to_string(FIELD_COUNT - 1) + " fields but found only " + std::to_string(count - 1) + "." };
+      case bad_client:return {"Bad Client Name"};
+      case bad_project:return {"Bad Project Name"};
+      case bad_name:return {"Bad Recording Name"};
+      case bad_descriptor:return {"Bad Recording Descriptor Name"};
+      case bad_date:return {"Bad Date"};
+      case bad_key:return {"Bad Key"};
+      case bad_bpm:return {"Bad BPM"};
+      case bad_ts:return {"Bad Time Signature"};
+      case bad_composer:return {"Bad Composer Name"};
+      case bad_external_talent:return {"Bad External Talent"};
+      case bad_extension:return {"Bad Extension"};
+    }
   };
 
 };
 
 Changeset::Changeset (std::vector<std::string> &&fields) :
-    m_fields (fields),
-    m_valid (true),
-    m_quit(false),
-    m_cleared(false),
-    m_skipped(false)
+  m_fields (fields),
+  m_valid (true),
+  m_quit(false),
+  m_cleared(false),
+  m_skipped(false)
 {}
 
 
@@ -40,7 +40,7 @@ std::string Changeset::first_error ()
 {
 
   if(has_error (bad_field_count))
-      return Private::error_to_string (*this, 0);
+    return Private::error_to_string (*this, 0);
 
   size_t size = m_errors.at (0).second + 2;
 
@@ -59,12 +59,12 @@ std::string Changeset::other_errors ()
 
   // skip first error
   for (int i = 1; i < m_errors.size (); i++)
-    {
-      if (i == m_errors.size () - 1)
-        buffer += Private::error_to_string (*this, i);
-      else
-        buffer += Private::error_to_string (*this, i) + " | ";
-    }
+  {
+    if (i == m_errors.size () - 1)
+      buffer += Private::error_to_string (*this, i);
+    else
+      buffer += Private::error_to_string (*this, i) + " | ";
+  }
   return buffer;
 }
 
@@ -91,10 +91,10 @@ void Changeset::clear_error(error_type err)
   auto itr = std::find_if(m_errors.begin(), m_errors.end(),[&err](const ValidationError & element){ return element.first == err;} );
 
   if(itr != m_errors.cend())
-    {
-      auto err_index = std::distance (m_errors.begin (), itr);
-      m_errors.erase (std::next (m_errors.begin (), err_index));
-    }
+  {
+    auto err_index = std::distance (m_errors.begin (), itr);
+    m_errors.erase (std::next (m_errors.begin (), err_index));
+  }
 }
 
 bool Changeset::error_is_bad_field_count ()
@@ -121,14 +121,14 @@ void Changeset::fill_fields (std::vector<std::string> &fields)
     fields.pop_back();
 
   while (fields_length <= FIELD_COUNT)
-    {
-      if (is_extension && fields_length == FIELD_COUNT)
-        fields.emplace_back (last_field); /* fill fields with empty strings */
-      else
-        fields.emplace_back (std::string ("?")); /* fill fields with empty strings */
+  {
+    if (is_extension && fields_length == FIELD_COUNT)
+      fields.emplace_back (last_field); /* fill fields with empty strings */
+    else
+      fields.emplace_back (std::string ("?")); /* fill fields with empty strings */
 
-      fields_length++;
-    }
+    fields_length++;
+  }
 }
 
 std::string Changeset::build_path()
@@ -139,8 +139,8 @@ std::string Changeset::build_path()
   for(auto &field : m_fields)
   {
     result += field;
-     if(count < FIELD_COUNT - 2) /* do not add delim for extension */
-       result += DELIM;
+    if(count < FIELD_COUNT - 2) /* do not add delim for extension */
+      result += DELIM;
     count++;
   }
 
