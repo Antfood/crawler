@@ -1,8 +1,8 @@
 #include "../include/validator.hpp"
 
 const std::array<std::regex, REGEX_COUNT> REGEXES = {
-    std::regex ("^[a-zA-Z1-9]+$"),                            /* client, project, composition*/
-    std::regex ("^[a-zA-Z]{4,}$"),                            /*  descriptor minimum of 4 letters */
+    std::regex ("^[a-zA-Z1-9&]+$"),                            /* client, project, composition*/
+    std::regex ("^[a-zA-Z]{4,}$"),                            /* descriptor minimum of 4 letters */
     std::regex ("^\\d{6}$"),                                  /* date */
     std::regex ("^[CDEFGAB](?:#||b)(?:m||modal)$"),           /* key  */
     std::regex ("^\\d{2,3}$"),                                /* bpm  */
