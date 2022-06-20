@@ -24,6 +24,8 @@ endif()
 
 project(crawler LANGUAGES CXX VERSION 0.1)
 
+ SET(CMAKE_CXX_FLAGS  "-mmacosx-version-min=10.7 -stdlib=libc++")
+
 file(GLOB_RECURSE SRC_FILES src/*.cpp)
 
 add_executable(crawler ${SRC_FILES})
