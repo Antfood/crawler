@@ -22,9 +22,9 @@ endif()
 
 # ------------------------------------------------------------------------------
 
-project(crawler LANGUAGES CXX VERSION 0.1)
+project(crawler LANGUAGES CXX VERSION 0.1.1)
 
- SET(CMAKE_CXX_FLAGS  "-mmacosx-version-min=10.7 -stdlib=libc++")
+ SET(CMAKE_CXX_FLAGS  "-mmacosx-version-min=12.8 -stdlib=libc++")
 
 file(GLOB_RECURSE SRC_FILES src/*.cpp)
 

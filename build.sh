@@ -9,5 +9,5 @@ fi
 
 if [ "$1" == "--release" ]; then
   cd build; make; cd .. ; 
-  cp build/crawler "/Users/pedro/Dropbox (Antfood, LLC)/ANTFOOD WORLDWIDE/crawler"
+  cp build/crawler "./releases/"
 fi
