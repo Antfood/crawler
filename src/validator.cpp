@@ -6,7 +6,7 @@ const std::array<std::regex, REGEX_COUNT> REGEXES = {
     std::regex ("^\\d{6}$"),                                  /* date */
     std::regex ("^[CDEFGAB](?:#||b)(?:m||modal)$"),           /* key  */
     std::regex ("^\\d{2,3}$"),                                /* bpm  */
-    std::regex ("^\\d{1,2}-\\d{1,2}$|^0-0|^\\*-\\*"),         /* time signature */
+    std::regex ("^\\d{1,2}-\\d{1,2}$|^0-0$|^\\*-\\*$"),         /* time signature */
     std::regex ("^(?!NXT)[A-Z]{2,3}((-[A-Z]{2,3})?)+$"),      /* composer - ignores NXT  */
     std::regex (R"(^NXT|(?:\w+\(\w+\))+)"),                   /* talent  */
     std::regex ("^.wav$")
